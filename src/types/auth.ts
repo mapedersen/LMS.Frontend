@@ -11,6 +11,7 @@ export interface AuthResponse {
 }
 
 export interface DecodedToken {
+  userName: string;
   role: string;
   exp: number;
 }
