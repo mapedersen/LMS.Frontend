@@ -1,5 +1,8 @@
 // src/Dashboard.tsx
-import { Box, Text } from "@chakra-ui/react";
+
+import { Box } from "../Components/Layout";
+import { Text } from "../Components/Typography";
+
 
 const Dashboard = () => {
   return (
