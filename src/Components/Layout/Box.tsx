@@ -1,9 +1,5 @@
-import { Box as ChakraBox, BoxProps } from '@chakra-ui/react'
+//https://v1.chakra-ui.com/docs/components/layout/box
+import { Box } from '@chakra-ui/react'
 
-export const Box = (props:BoxProps) => {
-  return (
-    <ChakraBox {...props}>
-        {props.children}
-    </ChakraBox>
-  )
-}
+export { Box }
+

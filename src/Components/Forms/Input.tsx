@@ -1,9 +1,6 @@
-import { Input as ChakraInput, InputProps } from '@chakra-ui/react'
+//https://v1.chakra-ui.com/docs/components/form/input
+import { Input } from '@chakra-ui/react'
 
-export const Input = (props:InputProps) => {
-  return (
-    <ChakraInput {...props}>
-        {props.children}
-    </ChakraInput>
-  )
+export {
+  Input
 }

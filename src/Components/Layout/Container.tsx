@@ -1,9 +1,4 @@
-import { Container as ChakraContainer, ContainerProps } from '@chakra-ui/react'
+//https://v1.chakra-ui.com/docs/components/layout/container
+import { Container } from '@chakra-ui/react'
 
-export const Container = (props:ContainerProps) => {
-  return (
-    <ChakraContainer {...props}>
-        {props.children}
-    </ChakraContainer>
-  )
-}
+export { Container }

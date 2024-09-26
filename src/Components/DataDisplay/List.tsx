@@ -1,9 +1,16 @@
-import { List as ChakraList, ListProps} from '@chakra-ui/react'
+//https://v1.chakra-ui.com/docs/components/data-display/list
+import {
+  List,
+  ListItem,
+  ListIcon,
+  OrderedList,
+  UnorderedList,
+} from '@chakra-ui/react'
 
-export const OrderedList = (props:ListProps) => {
-  return (
-    <ChakraList {...props}>
-        {props.children}
-    </ChakraList>
-  )
+export {
+  List,
+  ListItem,
+  ListIcon,
+  OrderedList,
+  UnorderedList
 }
