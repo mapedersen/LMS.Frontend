@@ -1,5 +1,6 @@
 // src/components/Login.tsx
 import React, { useState } from "react";
+import { handleLogin } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -19,45 +20,13 @@ const Login: React.FC = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    const response = await fetch("https://localhost:7243/api/authentication/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
-
-    if (response.ok) {
-      setIsLoggedIn(true);
-      toast({
-        title: "Login Successful",
-        description: "You've logged in successfully!",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-      console.log("Login successful!");
-      navigate("/dashboard");
-    } else {
-      toast({
-        title: "Login Failed",
-        description: "Invalid username or password.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-      console.log("Login failed!");
-    }
-  };
-
   return (
     <Box
       display="flex"
       alignItems="center"
       justifyContent="center"
       height="100vh"
-      bgImage={`url("https://images.pexels.com/photos/1438072/pexels-photo-1438072.jpeg")`} // Use your image here
+      bgImage={`url("https://images.pexels.com/photos/1438072/pexels-photo-1438072.jpeg")`}
       bgSize="cover"
       bgPosition="center">
       <Box p={8} bg="white" borderRadius="md" boxShadow="md" width="300px">
