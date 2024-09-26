@@ -1,12 +1,28 @@
-// src/Dashboard.tsx
-import { Box, Text } from "@chakra-ui/react";
+import StudentDashboard from "../components/StudentDasbhoard";
+import TeacherDashboard from "../components/TeacherDashboard";
+import { useAuth } from "../context/authContext";
+import { Box, Text, Heading, VStack } from "@chakra-ui/react";
 
 const Dashboard = () => {
+  const { user } = useAuth();
+  console.log(user);
+
+  if (!user) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Text>Please log in to access the dashboard.</Text>
+      </Box>
+    ); // Handle unauthorized access
+  }
+
   return (
-    <Box display="flex" alignItems="center" justifyContent="center" height="100vh" bg="gray.100">
-      <Text fontSize="4xl" fontWeight="bold">
-        Welcome to the Dashboard!
-      </Text>
+    <Box p={5}>
+      <Heading mb={4}>Dashboard</Heading>
+      <VStack spacing={4} align="start">
+        {user.role === "Teacher" && <TeacherDashboard />}
+        {user.role === "Student" && <StudentDashboard />}
+        {/* Additional role checks as necessary */}
+      </VStack>
     </Box>
   );
 };
