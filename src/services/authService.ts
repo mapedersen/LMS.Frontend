@@ -14,7 +14,6 @@ export const login = async (credentials: AuthCredentials): Promise<AuthResponse>
   if (!response.ok) {
     throw new Error("Login failed");
   }
-  console.log("Response is: ", response);
   return response.json();
 };
 
@@ -22,7 +21,6 @@ export const login = async (credentials: AuthCredentials): Promise<AuthResponse>
 export const refreshAccessToken = async () => {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
-  console.log("ref method values", accessToken, refreshToken);
 
   const response = await fetch("https://localhost:7243/api/authentication/refresh", {
     method: "POST",
@@ -35,14 +33,18 @@ export const refreshAccessToken = async () => {
     }),
   });
 
-  console.log("Refresh token response: ", response);
-
   if (response.ok) {
     const data = await response.json();
+    console.log("Updating local storage with new access and refreshtoken ", response);
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
+    return {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+    };
   } else {
     console.error("Failed to refresh token", response);
+    return {};
     // Optionally handle log out or redirect to login
   }
 };
