@@ -1,17 +1,20 @@
-import { Box, Heading, Text } from '@chakra-ui/react';
-import { Grid, GridItem } from '@chakra-ui/react';
 import {
   List,
   ListItem,
-  ListIcon,
-  OrderedList,
-  UnorderedList,
+  Grid,
+  GridItem,
+  Box,
+  Center,
+  Heading,
+  Text,
 } from '@chakra-ui/react';
-import { ModuleListItem } from './ModuleListItem';
 import { useAuth } from '../context/authContext';
 import { useEffect, useState } from 'react';
 import { fetchCourseDetails } from '../services/courseService';
 import { CourseDetails } from '../types/auth';
+import { ModuleList } from './ModulesList';
+import { ActiveModule } from './ActiveModule';
+import { ActivitiesList } from './ActivitiesList';
 
 export interface IActivityType {
   id: number;
@@ -52,6 +55,7 @@ const StudentDashboard = () => {
   const { user, course } = useAuth();
   const [currentCourse, setCurrentCourse] = useState<ICourse | null>(null);
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
+
   console.log('user', user);
   console.log('course', course);
 
@@ -64,54 +68,30 @@ const StudentDashboard = () => {
   if (!currentCourse) return <p>No Course</p>;
 
   console.log('currentCourse', currentCourse);
+
   const handleModuleClick = (module: IModule) => {
     setSelectedModule(module);
   };
   return (
     <Box p={5} w='100%'>
-      <Heading as='h2'>Course:{currentCourse.name}</Heading>
+      <Heading as='h2' mb={2}>
+        <Center>Course:{currentCourse.name}</Center>
+      </Heading>
       {/* Additional student-specific components */}
-      <Grid templateColumns='repeat(7, 1fr)' gap={6}>
-        <GridItem colSpan={2} bg='blue.500'>
-          <Text>All Modules</Text>
-          <List>
-            {currentCourse.modules.map((module) => (
-              <ListItem
-                key={module.id}
-                onClick={() => handleModuleClick(module)}
-                cursor='pointer'
-                _hover={{ backgroundColor: 'blue.200' }}
-              >
-                <Text fontWeight='bold'>{module.name}</Text>
-              </ListItem>
-            ))}
-          </List>
+      <Grid templateColumns='repeat(7, 1fr)' gap={10}>
+        <GridItem colSpan={1}>
+          <ModuleList
+            modules={currentCourse.modules}
+            handleModuleClick={handleModuleClick}
+            selectedModule={selectedModule}
+          />
         </GridItem>
-        <GridItem colSpan={5} bg='red.500'>
-          <Box>
-            <Text>Aktiv module</Text>
+        <GridItem colSpan={6} bg='gray.50' borderRadius='lg' boxShadow='md'>
+          <Box display='flex' justifyContent='center' flexDirection='column'>
             {selectedModule ? (
-              <Box>
-                <Text fontWeight='bold'>Name: {selectedModule.name}</Text>
-                <Text>Description: {selectedModule.description}</Text>
-                <Text>Start Date: {selectedModule.startDate}</Text>
-                <Text>End Date: {selectedModule.endDate}</Text>
-              </Box>
+              <ActiveModule selectedModule={selectedModule} />
             ) : (
               <Text>No Modules found.</Text>
-            )}
-            <Text>Activities</Text>
-            {selectedModule?.activities.length !== 0 ? (
-              selectedModule?.activities?.map((activity) => (
-                <Box>
-                  <Text fontWeight='bold'>Name: {activity.name}</Text>
-                  <Text>Description: {activity.description}</Text>
-                  <Text>Start Date: {activity.startDate}</Text>
-                  <Text>End Date: {activity.endDate}</Text>
-                </Box>
-              ))
-            ) : (
-              <Text>No Activities found.</Text>
             )}
           </Box>
         </GridItem>
