@@ -1,16 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/authContext"; // Import the useAuth hook
 import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  VStack,
-  Text,
-  useToast,
-} from "@chakra-ui/react";
+import { Box, Button, FormControl, FormLabel, Input, VStack, useToast } from "@chakra-ui/react";
 
 const Login = () => {
   const [username, setUsername] = useState("");

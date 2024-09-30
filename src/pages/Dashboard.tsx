@@ -1,4 +1,4 @@
-import StudentDashboard from "../components/StudentDasbhoard";
+import StudentDashboard from "../components/StudentDashBoard";
 import TeacherDashboard from "../components/TeacherDashboard";
 import { useAuth } from "../context/authContext";
 import { Box, Text, Heading, VStack } from "@chakra-ui/react";
