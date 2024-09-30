@@ -51,6 +51,7 @@ export interface ICourse {
 const StudentDashboard = () => {
   const { user, course } = useAuth();
   const [currentCourse, setCurrentCourse] = useState<ICourse | null>(null);
+  const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
   console.log('user', user);
   console.log('course', course);
 
@@ -63,6 +64,9 @@ const StudentDashboard = () => {
   if (!currentCourse) return <p>No Course</p>;
 
   console.log('currentCourse', currentCourse);
+  const handleModuleClick = (module: IModule) => {
+    setSelectedModule(module);
+  };
   return (
     <Box p={5} w='100%'>
       <Heading as='h2'>Course:{currentCourse.name}</Heading>
@@ -72,7 +76,12 @@ const StudentDashboard = () => {
           <Text>All Modules</Text>
           <List>
             {currentCourse.modules.map((module) => (
-              <ListItem key={module.id}>
+              <ListItem
+                key={module.id}
+                onClick={() => handleModuleClick(module)}
+                cursor='pointer'
+                _hover={{ backgroundColor: 'blue.200' }}
+              >
                 <Text fontWeight='bold'>{module.name}</Text>
               </ListItem>
             ))}
@@ -81,6 +90,29 @@ const StudentDashboard = () => {
         <GridItem colSpan={5} bg='red.500'>
           <Box>
             <Text>Aktiv module</Text>
+            {selectedModule ? (
+              <Box>
+                <Text fontWeight='bold'>Name: {selectedModule.name}</Text>
+                <Text>Description: {selectedModule.description}</Text>
+                <Text>Start Date: {selectedModule.startDate}</Text>
+                <Text>End Date: {selectedModule.endDate}</Text>
+              </Box>
+            ) : (
+              <Text>No Modules found.</Text>
+            )}
+            <Text>Activities</Text>
+            {selectedModule?.activities.length !== 0 ? (
+              selectedModule?.activities?.map((activity) => (
+                <Box>
+                  <Text fontWeight='bold'>Name: {activity.name}</Text>
+                  <Text>Description: {activity.description}</Text>
+                  <Text>Start Date: {activity.startDate}</Text>
+                  <Text>End Date: {activity.endDate}</Text>
+                </Box>
+              ))
+            ) : (
+              <Text>No Activities found.</Text>
+            )}
           </Box>
         </GridItem>
       </Grid>
