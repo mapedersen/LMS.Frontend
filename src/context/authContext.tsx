@@ -20,7 +20,7 @@ const setUserClaims = (token: string): DecodedToken => {
   return {
     userName: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
     role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-    exp: decodedToken.exp,
+    exp: decodedToken.exp ?? Math.floor(Date.now() / 1000) + 60 * 60, // Fallback to 1 hour in the future if exp is undefined,
   };
 };
 
@@ -54,12 +54,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Login function
   const login = async (credentials: AuthCredentials) => {
     const response: AuthResponse = await authServiceLogin(credentials);
-
-    if (response.accessToken) {
+    if (response.accessToken && response.refreshToken) {
       // Store accessToken and refreshToken in localStorage
       localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshtoken);
-
+      localStorage.setItem("refreshToken", response.refreshToken);
       // Decode accessToken and map claims to DecodedToken structure
       const userClaims = setUserClaims(response.accessToken);
 
