@@ -16,8 +16,20 @@ export interface DecodedToken {
   exp: number;
 }
 
+export interface CourseDetails {
+  courseId: string;
+  courseName: string;
+  instructor: string;
+}
+
+export interface UserState {
+  userClaims: DecodedToken;
+  courseDetails?: CourseDetails;
+}
+
 export interface AuthContextType {
   user: DecodedToken | null;
+  course: CourseDetails | null;
   login: (credentials: AuthCredentials) => Promise<void>;
   logout: () => void;
 }

@@ -6,8 +6,10 @@ import {
   DecodedToken,
   AuthContextType,
   AuthProviderProps,
+  CourseDetails,
 } from "../types/auth";
 import { login as authServiceLogin } from "../services/authService";
+import { fetchCourseDetails } from "../services/courseService";
 
 // Create context
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -15,6 +17,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 // Authprovider component as a functional component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<DecodedToken | null>(null);
+  const [course, setCourse] = useState<CourseDetails | null>(null);
 
   // Function to load the user from localStorage if a token exists
   useEffect(() => {
@@ -27,6 +30,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         exp: decodedToken.exp,
       };
       setUser(userClaims);
+
+      // Fetch course of logged in user
+      fetchCourseDetails(token)
+        .then(setCourse)
+        .catch((error) => {
+          console.log("Failed to fetch course details", error);
+        });
     }
   }, []);
 
@@ -46,6 +56,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       };
 
       setUser(userClaims);
+
+      // Fetch course details after user login
+      const courseDetails = await fetchCourseDetails(response.accessToken);
+      setCourse(courseDetails);
     }
   };
 
@@ -53,9 +67,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => {
     localStorage.removeItem("accessToken");
     setUser(null);
+    setCourse(null);
   };
 
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, course, login, logout }}>{children}</AuthContext.Provider>
+  );
 };
 
 // Hook to use the AuthContext
