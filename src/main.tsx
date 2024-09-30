@@ -7,11 +7,13 @@ import "./index.css";
 import { AuthProvider } from "./context/authContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
-  <ChakraProvider>
-    <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </ChakraProvider>
+  <React.StrictMode>
+    <ChakraProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </ChakraProvider>
+  </React.StrictMode>
 );
