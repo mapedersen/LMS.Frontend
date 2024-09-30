@@ -1,6 +1,5 @@
-// src/components/Login.tsx
 import React, { useState } from "react";
-import { handleLogin } from "../services/authService";
+import { useAuth } from "../context/authContext"; // Import the useAuth hook
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -13,12 +12,34 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-const Login: React.FC = () => {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+  const { login } = useAuth(); // Access the login method from context
+
+  const handleLogin = async () => {
+    try {
+      await login({ username, password }); // Call the login method
+      toast({
+        title: "Login Successful",
+        description: "Welcome to the dashboard!",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      navigate("/dashboard"); // Redirect to the dashboard after login
+    } catch (error) {
+      toast({
+        title: "Login Failed",
+        description: "Invalid username or password.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Box
@@ -51,7 +72,6 @@ const Login: React.FC = () => {
           <Button colorScheme="teal" onClick={handleLogin}>
             Login
           </Button>
-          {isLoggedIn && <Text color="green.500">You are logged in!</Text>}
         </VStack>
       </Box>
     </Box>
