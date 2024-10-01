@@ -6,59 +6,106 @@ import {
   DecodedToken,
   AuthContextType,
   AuthProviderProps,
-  CourseDetails,
 } from "../types/auth";
-import { login as authServiceLogin } from "../services/authService";
+import { CourseDetails } from "../types/course";
+import { login as authServiceLogin, refreshAccessToken } from "../services/authService"; // Import refreshAccessToken
 import { fetchCourseDetails } from "../services/courseService";
 
 // Create context
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// Authprovider component as a functional component
+// Utility function to decode token and set user claims
+const setUserClaims = (token: string): DecodedToken => {
+  const decodedToken: Record<string, any> = jwtDecode(token);
+  return {
+    userName: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+    role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
+    exp: decodedToken.exp ?? Math.floor(Date.now() / 1000) + 60 * 60, // Fallback to 1 hour in the future if exp is undefined
+  };
+};
+
+// AuthProvider component as a functional component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<DecodedToken | null>(null);
-  const [course, setCourse] = useState<CourseDetails | null>(null);
+  const [course, setCourse] = useState<CourseDetails[] | null>(null);
 
-  // Function to load the user from localStorage if a token exists
-  useEffect(() => {
+  // Function to load user and fetch course details
+  const loadUser = async () => {
     const token = localStorage.getItem("accessToken");
-    if (token) {
-      const decodedToken: Record<string, any> = jwtDecode(token);
-      const userClaims: DecodedToken = {
-        userName: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-        role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-        exp: decodedToken.exp,
-      };
-      setUser(userClaims);
 
-      // Fetch course of logged in user
-      fetchCourseDetails(token)
-        .then(setCourse)
-        .catch((error) => {
+    if (token) {
+      const userClaims = setUserClaims(token);
+
+      // Check if token is expired
+      if (checkIfTokenExpired(token)) {
+        await handleRefreshToken();
+      } else {
+        setUser(userClaims);
+        try {
+          const courseDetails = await fetchCourseDetails(token, userClaims.role);
+          setCourse(courseDetails);
+        } catch (error) {
           console.log("Failed to fetch course details", error);
-        });
+        }
+      }
     }
+  };
+
+  // Check if the access token has expired
+  const checkIfTokenExpired = (token: string): boolean => {
+    const decodedToken: Record<string, any> = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp < currentTime;
+  };
+
+  // Handle refresh token logic
+  const handleRefreshToken = async () => {
+    try {
+      const { accessToken, refreshToken } = await refreshAccessToken();
+      if (accessToken) {
+        // Update local storage
+        localStorage.setItem("accessToken", accessToken);
+        if (refreshToken) {
+          localStorage.setItem("refreshToken", refreshToken);
+        }
+
+        // Decode new access token and update user state
+        const userClaims = setUserClaims(accessToken);
+        setUser(userClaims);
+
+        // Fetch course details again
+        const courseDetails = await fetchCourseDetails(accessToken, userClaims.role);
+        setCourse(courseDetails);
+      } else {
+        // Handle case when refresh token fails (e.g., log out)
+        logout();
+      }
+    } catch (error) {
+      console.error("Failed to refresh access token", error);
+      logout(); // Logout on error
+    }
+  };
+
+  // Load user on component mount
+  useEffect(() => {
+    loadUser();
   }, []);
 
   // Login function
   const login = async (credentials: AuthCredentials) => {
     const response: AuthResponse = await authServiceLogin(credentials);
-    if (response.accessToken) {
+    if (response.accessToken && response.refreshToken) {
+      // Store accessToken and refreshToken in localStorage
       localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("refreshToken", response.refreshToken);
+      // Decode accessToken and map claims to DecodedToken structure
+      const userClaims = setUserClaims(response.accessToken);
 
-      // Decode token and map claims to DecodedToken structure
-      const decodedToken = jwtDecode<Record<string, any>>(response.accessToken);
-
-      const userClaims: DecodedToken = {
-        userName: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
-        role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-        exp: decodedToken.exp,
-      };
-
+      // Set user in state according to decoded data
       setUser(userClaims);
 
-      // Fetch course details after user login
-      const courseDetails = await fetchCourseDetails(response.accessToken);
+      // Fetch course details belonging to the user after login
+      const courseDetails = await fetchCourseDetails(response.accessToken, userClaims.role);
       setCourse(courseDetails);
     }
   };
@@ -66,6 +113,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Logout function
   const logout = () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     setUser(null);
     setCourse(null);
   };
