@@ -8,7 +8,7 @@ export interface AuthCredentials {
 
 export interface AuthResponse {
   accessToken: string;
-  refreshtoken: string;
+  refreshToken: string;
 }
 
 export interface DecodedToken {

@@ -8,7 +8,7 @@ import {
   AuthProviderProps,
 } from "../types/auth";
 import { CourseDetails } from "../types/course";
-import { login as authServiceLogin } from "../services/authService";
+import { login as authServiceLogin, refreshAccessToken } from "../services/authService"; // Import refreshAccessToken
 import { fetchCourseDetails } from "../services/courseService";
 
 // Create context
@@ -20,11 +20,11 @@ const setUserClaims = (token: string): DecodedToken => {
   return {
     userName: decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
     role: decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"],
-    exp: decodedToken.exp,
+    exp: decodedToken.exp ?? Math.floor(Date.now() / 1000) + 60 * 60, // Fallback to 1 hour in the future if exp is undefined
   };
 };
 
-// Authprovider component as a functional component
+// AuthProvider component as a functional component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<DecodedToken | null>(null);
   const [course, setCourse] = useState<CourseDetails[] | null>(null);
@@ -35,14 +35,54 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     if (token) {
       const userClaims = setUserClaims(token);
-      setUser(userClaims);
 
-      try {
-        const courseDetails = await fetchCourseDetails(token, userClaims.role);
-        setCourse(courseDetails);
-      } catch (error) {
-        console.log("Failed to fetch course details", error);
+      // Check if token is expired
+      if (checkIfTokenExpired(token)) {
+        await handleRefreshToken();
+      } else {
+        setUser(userClaims);
+        try {
+          const courseDetails = await fetchCourseDetails(token, userClaims.role);
+          setCourse(courseDetails);
+        } catch (error) {
+          console.log("Failed to fetch course details", error);
+        }
       }
+    }
+  };
+
+  // Check if the access token has expired
+  const checkIfTokenExpired = (token: string): boolean => {
+    const decodedToken: Record<string, any> = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp < currentTime;
+  };
+
+  // Handle refresh token logic
+  const handleRefreshToken = async () => {
+    try {
+      const { accessToken, refreshToken } = await refreshAccessToken();
+      if (accessToken) {
+        // Update local storage
+        localStorage.setItem("accessToken", accessToken);
+        if (refreshToken) {
+          localStorage.setItem("refreshToken", refreshToken);
+        }
+
+        // Decode new access token and update user state
+        const userClaims = setUserClaims(accessToken);
+        setUser(userClaims);
+
+        // Fetch course details again
+        const courseDetails = await fetchCourseDetails(accessToken, userClaims.role);
+        setCourse(courseDetails);
+      } else {
+        // Handle case when refresh token fails (e.g., log out)
+        logout();
+      }
+    } catch (error) {
+      console.error("Failed to refresh access token", error);
+      logout(); // Logout on error
     }
   };
 
@@ -54,12 +94,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // Login function
   const login = async (credentials: AuthCredentials) => {
     const response: AuthResponse = await authServiceLogin(credentials);
-
-    if (response.accessToken) {
+    if (response.accessToken && response.refreshToken) {
       // Store accessToken and refreshToken in localStorage
       localStorage.setItem("accessToken", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshtoken);
-
+      localStorage.setItem("refreshToken", response.refreshToken);
       // Decode accessToken and map claims to DecodedToken structure
       const userClaims = setUserClaims(response.accessToken);
 
