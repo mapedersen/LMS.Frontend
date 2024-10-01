@@ -5,8 +5,12 @@ import { Box, Text, Heading, VStack } from "@chakra-ui/react";
 
 const Dashboard = () => {
   const { user, course } = useAuth();
-  console.log("The user is: ", user);
-  console.log("The course is: ", course);
+  if (user) {
+    console.log("The user is: ", user);
+  }
+  if (course) {
+    console.log("The course is: ", course);
+  }
 
   if (!user) {
     return (
