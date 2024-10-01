@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { CourseDetails } from "./course";
 
 export interface AuthCredentials {
   username: string;
@@ -16,8 +17,13 @@ export interface DecodedToken {
   exp: number;
 }
 
+export interface UserState {
+  userClaims: DecodedToken;
+}
+
 export interface AuthContextType {
   user: DecodedToken | null;
+  course: CourseDetails[] | null;
   login: (credentials: AuthCredentials) => Promise<void>;
   logout: () => void;
 }
