@@ -1,15 +1,8 @@
-import {
-  List,
-  ListItem,
-  Box,
-  Text,
-  Flex,
-  Badge,
-  Button,
-} from "@chakra-ui/react";
+import { List, ListItem, Box, Text, Flex, Badge } from "@chakra-ui/react";
 import { IActivity } from "./StudentDashBoard";
 import { parseISO, isAfter } from "date-fns";
 import { useState } from "react";
+import { ToggleButton } from ".";
 
 interface IModule {
   id: number;
@@ -57,14 +50,12 @@ export const ModuleList = ({
 
   return (
     <>
-      <Button
-        mt={4}
-        minW={"220px"}
-        onClick={() => setViewActiveModules(!viewActiveModules)}
-        colorScheme="blue"
-      >
-        {viewActiveModules ? "Show Expired Modules" : "Show Active Modules"}
-      </Button>
+      <ToggleButton
+        isToggled={viewActiveModules}
+        onToggle={() => setViewActiveModules(!viewActiveModules)}
+        activeLabel="Show Expired Modules"
+        inactiveLabel="Show Active Modules"
+      />
 
       {viewActiveModules ? (
         <>
@@ -114,17 +105,14 @@ export const ModuleList = ({
           </List>
 
           {activeModules.length > 3 && (
-            <Button
-              mt={4}
-              onClick={() => setShowAllActive(!showAllActive)}
-              colorScheme="blue"
-            >
-              {showAllActive
-                ? "Show fewer modules"
-                : `Show ${hiddenActiveModulesCount} more active module${
-                    hiddenActiveModulesCount > 1 ? "s" : ""
-                  }`}
-            </Button>
+            <ToggleButton
+              isToggled={showAllActive}
+              onToggle={() => setShowAllActive(!showAllActive)}
+              activeLabel="Show fewer modules"
+              inactiveLabel={`Show ${hiddenActiveModulesCount} more active module${
+                hiddenActiveModulesCount > 1 ? "s" : ""
+              }`}
+            />
           )}
         </>
       ) : (
