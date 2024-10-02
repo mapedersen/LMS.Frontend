@@ -6,7 +6,6 @@ import {
   Flex,
   Badge,
   Button,
-  Collapse,
 } from "@chakra-ui/react";
 import { IActivity } from "./StudentDashBoard";
 import { parseISO, isAfter } from "date-fns";
@@ -33,7 +32,8 @@ export const ModuleList = ({
   handleModuleClick,
   selectedModule,
 }: IModuleListProps) => {
-  const [showExpired, setShowExpired] = useState(false);
+  const [showAllActive, setShowAllActive] = useState(false);
+  const [viewActiveModules, setViewActiveModules] = useState(true);
   const today = new Date();
 
   const activeModules = modules.filter((module) =>
@@ -44,6 +44,13 @@ export const ModuleList = ({
     (module) => !isAfter(parseISO(module.endDate), today)
   );
 
+  const activeModulesToShow = showAllActive
+    ? activeModules
+    : activeModules.slice(0, 3);
+
+  const hiddenActiveModulesCount =
+    activeModules.length - activeModulesToShow.length;
+
   if (!modules || modules.length === 0) {
     return <Text>No modules available</Text>;
   }
@@ -51,97 +58,122 @@ export const ModuleList = ({
   return (
     <>
       <Button
-        w={24}
         mt={4}
-        onClick={() => setShowExpired(!showExpired)}
+        minW={"220px"}
+        onClick={() => setViewActiveModules(!viewActiveModules)}
         colorScheme="blue"
       >
-        {showExpired ? "Show Active Modules" : "Show Expired Modules"}
+        {viewActiveModules ? "Show Expired Modules" : "Show Active Modules"}
       </Button>
 
-      <List spacing={4} mt={4}>
-        {/* Show active modules*/}
-        {!showExpired &&
-          activeModules.map((module) => (
-            <ListItem
-              key={module.id}
-              onClick={() => handleModuleClick(module)}
-              cursor="pointer"
-            >
-              <Box
-                p={4}
-                borderWidth="1px"
-                borderRadius="lg"
-                maxW={"320px"}
-                minW={"320px"}
-                bg={selectedModule?.id === module.id ? "blue.50" : "white"}
-                _hover={{
-                  backgroundColor: "gray.100",
-                }}
+      {viewActiveModules ? (
+        <>
+          <List spacing={4} mt={4}>
+            {activeModulesToShow.map((module) => (
+              <ListItem
+                key={module.id}
+                onClick={() => handleModuleClick(module)}
+                cursor="pointer"
               >
-                <Flex justifyContent="space-between" alignItems="center">
-                  <Text fontSize="lg">{module.name}</Text>{" "}
-                  <Badge colorScheme="blue">
-                    {module.activities.length} Activities
-                  </Badge>
-                </Flex>
-                <Text fontSize="sm" color="gray.500">
-                  {module.description}
-                </Text>
-                <Text fontSize="sm" mt={2}>
-                  <Text as="span" fontWeight="bold">
-                    Start Date:
-                  </Text>{" "}
-                  {module.startDate}
-                </Text>
-                <Text fontSize="sm">
-                  <Text as="span" fontWeight="bold">
-                    End Date:
-                  </Text>{" "}
-                  {module.endDate}
-                </Text>
-              </Box>
-            </ListItem>
-          ))}
+                <Box
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  bg={selectedModule?.id === module.id ? "blue.50" : "white"}
+                  _hover={{
+                    backgroundColor: "gray.100",
+                  }}
+                  maxW="320px"
+                  minW="320px"
+                  minH="150px"
+                >
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Text fontSize="lg">{module.name}</Text>
+                    <Badge colorScheme="blue">
+                      {module.activities.length} Activities
+                    </Badge>
+                  </Flex>
+                  <Text fontSize="sm" color="gray.500">
+                    {module.description}
+                  </Text>
+                  <Text fontSize="sm" mt={2}>
+                    <Text as="span" fontWeight="bold">
+                      Start Date:
+                    </Text>{" "}
+                    {module.startDate}
+                  </Text>
+                  <Text fontSize="sm">
+                    <Text as="span" fontWeight="bold">
+                      End Date:
+                    </Text>{" "}
+                    {module.endDate}
+                  </Text>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
 
-        {/* Show expired modules*/}
-        {showExpired &&
-          expiredModules.map((module) => (
-            <ListItem key={module.id} onClick={() => handleModuleClick(module)}>
-              <Box
-                p={4}
-                borderWidth="1px"
-                borderRadius="lg"
-                bg="gray.100"
-                _hover={{
-                  backgroundColor: "gray.200",
-                }}
-                maxW={"320px"}
-                minW={"320px"}
+          {activeModules.length > 3 && (
+            <Button
+              mt={4}
+              onClick={() => setShowAllActive(!showAllActive)}
+              colorScheme="blue"
+            >
+              {showAllActive
+                ? "Show fewer modules"
+                : `Show ${hiddenActiveModulesCount} more active module${
+                    hiddenActiveModulesCount > 1 ? "s" : ""
+                  }`}
+            </Button>
+          )}
+        </>
+      ) : (
+        <>
+          <List spacing={4} mt={4}>
+            {expiredModules.map((module) => (
+              <ListItem
+                key={module.id}
+                onClick={() => handleModuleClick(module)}
+                cursor="not-allowed"
               >
-                <Flex justifyContent="space-between" alignItems="center">
-                  <Text fontSize="lg">{module.name}</Text>
-                  <Badge colorScheme="red">Expired</Badge>
-                </Flex>
-                <Text fontSize="sm" color="gray.500">
-                  {module.description}
-                </Text>
-                <Text fontSize="sm" mt={2}>
-                  <Text as="span" fontWeight="bold">
-                    Start Date:
-                  </Text>{" "}
-                  {module.startDate}
-                </Text>
-                <Text fontSize="sm">
-                  <Text as="span" fontWeight="bold">
-                    End Date:
-                  </Text>{" "}
-                  {module.endDate}
-                </Text>
-              </Box>
-            </ListItem>
-          ))}
-      </List>
+                <Box
+                  p={4}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  bg="gray.100"
+                  _hover={{
+                    backgroundColor: "gray.200",
+                  }}
+                  opacity={0.6}
+                  maxW="320px"
+                  minW="320px"
+                  minH="150px"
+                >
+                  <Flex justifyContent="space-between" alignItems="center">
+                    <Text fontSize="lg">{module.name}</Text>
+                    <Badge colorScheme="red">Expired</Badge>
+                  </Flex>
+                  <Text fontSize="sm" color="gray.500">
+                    {module.description}
+                  </Text>
+                  <Text fontSize="sm" mt={2}>
+                    <Text as="span" fontWeight="bold">
+                      Start Date:
+                    </Text>{" "}
+                    {module.startDate}
+                  </Text>
+                  <Text fontSize="sm">
+                    <Text as="span" fontWeight="bold">
+                      End Date:
+                    </Text>{" "}
+                    {module.endDate}
+                  </Text>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
     </>
   );
 };
