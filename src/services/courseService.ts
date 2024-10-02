@@ -44,3 +44,33 @@ export const fetchCourseDetails = async (
   }
   return response.json();
 };
+
+export const fetchStudentsForCourse = async (
+  accessToken: string,
+  courseId: number
+): Promise<any[]> => {
+  if (checkIfTokenExpired(accessToken)) {
+    const { accessToken: newAccessToken } = await refreshAccessToken();
+    if (newAccessToken) {
+      accessToken = newAccessToken;
+    } else {
+      throw new Error("Failed to refresh access token, please log in again.");
+    }
+  }
+
+  const url = `http://localhost:5058/api/courses/${courseId}/students`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch students for course");
+  }
+
+  return response.json();
+};
