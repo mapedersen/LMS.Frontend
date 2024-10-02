@@ -88,14 +88,18 @@ const StudentDashboard = () => {
           console.error("Error fetching students:", error);
         }
       };
-
       fetchStudents();
     }
   }, [currentCourse, user]);
 
   useEffect(() => {
     if (currentCourse && currentCourse.modules.length > 0 && !selectedModule) {
-      setSelectedModule(currentCourse.modules[0]);
+      const activeModules = currentCourse.modules.filter(
+        (module) => new Date(module.endDate) >= new Date()
+      );
+      if (activeModules.length > 0) {
+        setSelectedModule(activeModules[0]);
+      }
     }
   }, [currentCourse, selectedModule]);
 
