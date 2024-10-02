@@ -11,6 +11,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  Flex,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
@@ -126,7 +127,7 @@ const StudentDashboard = () => {
             )}
           </Box>
           {/* Display fellow student*/}
-          <Stack spacing={4} mt={4}>
+          <Flex wrap="wrap" justify="center" gap={4} mt={4}>
             {studentsForCourse.length > 0 ? (
               studentsForCourse.map((student) => (
                 <Card
@@ -134,6 +135,9 @@ const StudentDashboard = () => {
                   border="1px"
                   borderColor="gray.200"
                   p={4}
+                  maxW="300px"
+                  minW="280px"
+                  flex="1"
                 >
                   <CardHeader>
                     <Heading size="xs">
@@ -148,7 +152,7 @@ const StudentDashboard = () => {
             ) : (
               <Text>No students found.</Text>
             )}
-          </Stack>
+          </Flex>
         </GridItem>
       </Grid>
     </Box>
