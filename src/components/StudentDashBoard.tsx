@@ -92,9 +92,14 @@ const StudentDashboard = () => {
     }
   }, [currentCourse, user]);
 
+  useEffect(() => {
+    if (currentCourse && currentCourse.modules.length > 0 && !selectedModule) {
+      setSelectedModule(currentCourse.modules[0]);
+    }
+  }, [currentCourse, selectedModule]);
+
   if (!currentCourse) return <p>No Course</p>;
 
-  console.log("currentCourse", currentCourse);
   console.log("studentsForCourse", studentsForCourse);
   const handleModuleClick = (module: IModule) => {
     setSelectedModule(module);
@@ -104,7 +109,6 @@ const StudentDashboard = () => {
       <Heading as="h2" mb={2}>
         <Center>Course:{currentCourse.name}</Center>
       </Heading>
-      {/* Additional student-specific components */}
       <Grid templateColumns="repeat(7, 1fr)" gap={10}>
         <GridItem colSpan={1}>
           <ModuleList
@@ -121,6 +125,7 @@ const StudentDashboard = () => {
               <Text>No Modules found.</Text>
             )}
           </Box>
+          {/* Display fellow student*/}
           <Stack spacing={4} mt={4}>
             {studentsForCourse.length > 0 ? (
               studentsForCourse.map((student) => (
@@ -131,12 +136,12 @@ const StudentDashboard = () => {
                   p={4}
                 >
                   <CardHeader>
-                    <Heading size="md">
+                    <Heading size="xs">
                       {student.firstName} {student.lastName}
                     </Heading>
                   </CardHeader>
                   <CardBody>
-                    <Text>Email: {student.email}</Text>
+                    <Text fontSize="sm">Email: {student.email}</Text>
                   </CardBody>
                 </Card>
               ))
@@ -146,7 +151,6 @@ const StudentDashboard = () => {
           </Stack>
         </GridItem>
       </Grid>
-      {/* Display students as cards */}
     </Box>
   );
 };
