@@ -70,7 +70,7 @@ const AddCourse = () => {
   };
 
   return (
-    <Box p={5} maxW="md" borderWidth={1} borderRadius="lg" boxShadow="lg">
+    <Box maxW="md" mx="auto" mt={8} p={6} borderWidth={1} borderRadius="lg" boxShadow="lg">
       <Heading mb={6} size="lg">Add New Course</Heading>
       <form onSubmit={handleSubmit}>
         <VStack spacing={4} align="stretch">
