@@ -3,7 +3,7 @@ import { useAuth } from "../context/authContext"; // Import the useAuth hook
 import { useNavigate } from "react-router-dom";
 import { Box, Button, FormControl, FormLabel, Input, VStack, useToast } from "@chakra-ui/react";
 
-const Login = () => {
+const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const toast = useToast();
@@ -69,4 +69,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;
