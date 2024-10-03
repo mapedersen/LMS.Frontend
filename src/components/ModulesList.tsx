@@ -1,18 +1,8 @@
 import { List, ListItem, Text } from "@chakra-ui/react";
-import { IActivity } from "./StudentDashboard";
 import { parseISO, isAfter } from "date-fns";
 import { useState } from "react";
 import { ExpiredModuleCard, ModuleCard, ToggleButton } from ".";
-
-interface IModule {
-  id: number;
-  name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  courseId: number;
-  activities: IActivity[];
-}
+import { IModule } from "../types/course";
 
 interface IModuleListProps {
   modules: IModule[];

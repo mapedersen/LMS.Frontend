@@ -1,5 +1,5 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { IActivity } from "./StudentDashboard";
+import { IActivity } from "../types/course";
 
 // Funktion för att beräkna antalet dagar mellan två datum
 const calculateDaysDifference = (startDate: string) => {

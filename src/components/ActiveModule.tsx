@@ -1,6 +1,6 @@
 import { Box, Text, Divider } from "@chakra-ui/react";
-import { IModule } from "./StudentDashboard";
 import { ActivitiesList } from "./ActivitiesList";
+import { IModule } from "../types/course";
 
 interface IActiveModuleProps {
   selectedModule: IModule;

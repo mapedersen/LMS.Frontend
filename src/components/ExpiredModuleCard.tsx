@@ -1,5 +1,5 @@
 import { Box, Text, Flex, Badge } from "@chakra-ui/react";
-import { IModule } from "./StudentDashboard";
+import { IModule } from "../types/course";
 
 interface ExpiredModuleCardProps {
   module: IModule;
