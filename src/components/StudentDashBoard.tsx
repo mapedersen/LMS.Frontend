@@ -150,7 +150,9 @@ const StudentDashboard = () => {
                 </Card>
               ))
             ) : (
-              <Text>No students found.</Text>
+              <Text>
+                No other students for current course {currentCourse.name}.
+              </Text>
             )}
           </Flex>
         </GridItem>
