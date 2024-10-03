@@ -1,5 +1,5 @@
 import { Box, Text, Divider } from "@chakra-ui/react";
-import { IModule } from "./StudentDashBoard";
+import { IModule } from "./StudentDashboard";
 import { ActivitiesList } from "./ActivitiesList";
 
 interface IActiveModuleProps {
@@ -20,8 +20,7 @@ export const ActiveModule = ({ selectedModule }: IActiveModuleProps) => {
       boxShadow="lg"
       bg="white"
       maxW="800px"
-      margin="auto"
-    >
+      margin="auto">
       <Text fontSize="xl" fontWeight="bold" mb={2}>
         {selectedModule.name}
       </Text>

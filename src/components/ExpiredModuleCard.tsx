@@ -1,5 +1,5 @@
 import { Box, Text, Flex, Badge } from "@chakra-ui/react";
-import { IModule } from "./StudentDashBoard";
+import { IModule } from "./StudentDashboard";
 
 interface ExpiredModuleCardProps {
   module: IModule;
@@ -19,8 +19,7 @@ export const ExpiredModuleCard = ({ module }: ExpiredModuleCardProps) => {
       maxW="320px"
       minW="320px"
       minH="150px"
-      cursor="not-allowed"
-    >
+      cursor="not-allowed">
       <Flex justifyContent="space-between" alignItems="center">
         <Text fontSize="lg">{module.name}</Text>
         <Badge colorScheme="red">Expired</Badge>

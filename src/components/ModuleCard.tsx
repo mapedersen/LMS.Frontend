@@ -1,5 +1,5 @@
 import { Box, Text, Flex, Badge } from "@chakra-ui/react";
-import { IModule } from "./StudentDashBoard";
+import { IModule } from "./StudentDashboard";
 
 interface ModuleCardProps {
   module: IModule;
@@ -19,8 +19,7 @@ export const ModuleCard = ({ module, isSelected }: ModuleCardProps) => {
       maxW="320px"
       minW="320px"
       minH="150px"
-      cursor="pointer"
-    >
+      cursor="pointer">
       <Flex justifyContent="space-between" alignItems="center">
         <Text fontSize="lg">{module.name}</Text>
         <Badge colorScheme="blue">{module.activities.length} Activities</Badge>

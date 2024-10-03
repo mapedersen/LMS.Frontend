@@ -1,5 +1,5 @@
-import { Box, Flex, Text } from '@chakra-ui/react';
-import { IActivity } from './StudentDashBoard';
+import { Box, Flex, Text } from "@chakra-ui/react";
+import { IActivity } from "./StudentDashboard";
 
 // Funktion för att beräkna antalet dagar mellan två datum
 const calculateDaysDifference = (startDate: string) => {
@@ -14,28 +14,25 @@ const calculateDaysDifference = (startDate: string) => {
 };
 
 // Funktion som returnerar text baserat på antalet dagar till start eller om aktiviteten är avslutad
-const getDaysUntilStartOrCompletion = (
-  startDate: string,
-  endDate: string
-): string => {
+const getDaysUntilStartOrCompletion = (startDate: string, endDate: string): string => {
   const daysUntilStart = calculateDaysDifference(startDate);
   const today = new Date();
   const end = new Date(endDate);
 
   // Kontrollera om aktiviteten redan har avslutats
   if (today > end) {
-    return 'Completed'; // Om slutdatumet har passerat
+    return "Completed"; // Om slutdatumet har passerat
   }
 
   // Kontrollera om startdatum är idag eller i framtiden
   if (daysUntilStart === 0) {
-    return 'Today';
+    return "Today";
   } else if (daysUntilStart === 1) {
-    return 'Tomorrow';
+    return "Tomorrow";
   } else if (daysUntilStart > 1) {
     return `${daysUntilStart} days left`;
   } else {
-    return 'Already started'; // Om aktiviteten har börjat men inte är avslutad
+    return "Already started"; // Om aktiviteten har börjat men inte är avslutad
   }
 };
 
@@ -59,26 +56,16 @@ export const ActivitiesList = ({ activities }: { activities: IActivity[] }) => {
     <Box>
       {activities.map((activity) => {
         // Behåll den befintliga statuslogiken
-        const status = getDaysUntilStartOrCompletion(
-          activity.startDate,
-          activity.endDate
-        );
+        const status = getDaysUntilStartOrCompletion(activity.startDate, activity.endDate);
 
         return (
-          <Box
-            key={activity.id}
-            p={4}
-            mb={3}
-            borderWidth='1px'
-            borderRadius='md'
-            bg='gray.50'
-          >
-            <Flex justifyContent='space-between' alignItems='center'>
+          <Box key={activity.id} p={4} mb={3} borderWidth="1px" borderRadius="md" bg="gray.50">
+            <Flex justifyContent="space-between" alignItems="center">
               {/* Aktivitetens namn */}
-              <Text fontWeight='bold'>{activity.name}</Text>
+              <Text fontWeight="bold">{activity.name}</Text>
 
               {/* Typens namn, mindre och till höger */}
-              <Text fontSize='xs' color='gray.500'>
+              <Text fontSize="xs" color="gray.500">
                 {activity.type.name} {/* Typen längst till höger och mindre */}
               </Text>
             </Flex>
@@ -87,12 +74,12 @@ export const ActivitiesList = ({ activities }: { activities: IActivity[] }) => {
 
             {/* Här visar vi status eller hur många dagar det är kvar till start */}
             <Text
-              fontSize='sm'
-              color={isToday(activity.startDate) ? 'red.500' : 'black'} // Sätter röd färg om aktiviteten är idag
+              fontSize="sm"
+              color={isToday(activity.startDate) ? "red.500" : "black"} // Sätter röd färg om aktiviteten är idag
             >
-              <Text as='span' fontWeight='bold'>
+              <Text as="span" fontWeight="bold">
                 Status:
-              </Text>{' '}
+              </Text>{" "}
               {status}
             </Text>
           </Box>

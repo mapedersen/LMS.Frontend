@@ -1,5 +1,5 @@
 import { List, ListItem, Text } from "@chakra-ui/react";
-import { IActivity } from "./StudentDashBoard";
+import { IActivity } from "./StudentDashboard";
 import { parseISO, isAfter } from "date-fns";
 import { useState } from "react";
 import { ExpiredModuleCard, ModuleCard, ToggleButton } from ".";
