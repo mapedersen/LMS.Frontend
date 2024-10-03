@@ -1,35 +1,25 @@
+import { useEffect, useState } from "react";
 import {
-  List,
-  ListItem,
   Grid,
   GridItem,
   Box,
   Center,
   Heading,
   Text,
-  Stack,
   Card,
   CardHeader,
   CardBody,
   Flex,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
-import { useEffect, useState } from "react";
-import {
-  fetchCourseDetails,
-  fetchStudentsForCourse,
-} from "../services/courseService";
-//import { CourseDetails } from "../types/auth";
-import { ModuleList } from "./ModulesList";
+import { fetchStudentsForCourse } from "../services/courseService";
 import { ActiveModule } from "./ActiveModule";
-import { ActivitiesList } from "./ActivitiesList";
+import { ModuleList } from "./ModulesList";
 import { IUser } from "../types/user";
-
 export interface IActivityType {
   id: number;
   name: string;
 }
-
 export interface IActivity {
   id: number;
   name: string;
@@ -105,7 +95,6 @@ const StudentDashboard = () => {
 
   if (!currentCourse) return <p>No Course</p>;
 
-  console.log("studentsForCourse", studentsForCourse);
   const handleModuleClick = (module: IModule) => {
     setSelectedModule(module);
   };
@@ -116,14 +105,16 @@ const StudentDashboard = () => {
       </Heading>
       <Grid templateColumns="repeat(7, 1fr)" gap={10}>
         <GridItem colSpan={1}>
-          <ModuleList
-            modules={currentCourse.modules}
-            handleModuleClick={handleModuleClick}
-            selectedModule={selectedModule}
-          />
+          <Box>
+            <ModuleList
+              modules={currentCourse.modules}
+              handleModuleClick={handleModuleClick}
+              selectedModule={selectedModule}
+            />
+          </Box>
         </GridItem>
         <GridItem colSpan={6} bg="gray.50" borderRadius="lg" boxShadow="md">
-          <Box display="flex" justifyContent="center" flexDirection="column">
+          <Box>
             {selectedModule ? (
               <ActiveModule selectedModule={selectedModule} />
             ) : (
