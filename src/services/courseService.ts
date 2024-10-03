@@ -44,3 +44,28 @@ export const fetchCourseDetails = async (
   }
   return response.json();
 };
+
+export const createCourse = async (
+  accessToken: string,
+  course: { name: string; description: string; startDate: string }
+) => {
+  if (checkIfTokenExpired(accessToken)) {
+    const { accessToken: newAccessToken } = await refreshAccessToken();
+    accessToken = newAccessToken || accessToken;
+  }
+
+  const response = await fetch("https://localhost:7243/api/courses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(course),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create the course");
+  }
+
+  return response.json();
+};
