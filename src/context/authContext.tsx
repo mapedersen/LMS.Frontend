@@ -7,9 +7,10 @@ import {
   AuthContextType,
   AuthProviderProps,
 } from "../types/auth";
-import { CourseDetails } from "../types/course";
+
 import { login as authServiceLogin, refreshAccessToken } from "../services/authService"; // Import refreshAccessToken
 import { fetchCourseDetails } from "../services/courseService";
+import { ICourse, ICourses } from "../types/course";
 
 // Create context
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -27,7 +28,7 @@ const setUserClaims = (token: string): DecodedToken => {
 // AuthProvider component as a functional component
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<DecodedToken | null>(null);
-  const [course, setCourse] = useState<CourseDetails[] | null>(null);
+  const [course, setCourse] = useState<ICourse | ICourses | null>(null);
 
   // Function to load user and fetch course details
   const loadUser = async () => {

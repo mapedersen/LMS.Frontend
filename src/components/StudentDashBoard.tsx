@@ -16,39 +16,7 @@ import { fetchStudentsForCourse } from "../services/courseService";
 import { ActiveModule } from "./ActiveModule";
 import { ModuleList } from "./ModulesList";
 import { IUser } from "../types/user";
-export interface IActivityType {
-  id: number;
-  name: string;
-}
-export interface IActivity {
-  id: number;
-  name: string;
-  description: string;
-  details: string | null;
-  typeId: number;
-  type: IActivityType;
-  startDate: string;
-  endDate: string;
-  moduleId: number;
-}
-
-export interface IModule {
-  id: number;
-  name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  courseId: number;
-  activities: IActivity[] | [];
-}
-
-export interface ICourse {
-  id: number;
-  name: string;
-  description: string;
-  startDate: string;
-  modules: IModule[];
-}
+import { ICourse, IModule } from "../types/course";
 
 const StudentDashboard = () => {
   const { user, course } = useAuth();
@@ -66,10 +34,7 @@ const StudentDashboard = () => {
         try {
           const accessToken = localStorage.getItem("accessToken");
           if (accessToken) {
-            const students = await fetchStudentsForCourse(
-              accessToken,
-              currentCourse.id
-            );
+            const students = await fetchStudentsForCourse(accessToken, currentCourse.id);
             setStudentsForCourse(students);
           } else {
             console.error("No access token available.");
@@ -114,8 +79,7 @@ const StudentDashboard = () => {
           borderRadius="lg"
           boxShadow="md"
           p={4}
-          height="fit-content"
-        >
+          height="fit-content">
           <Box>
             <Heading as="h2" mb={2}>
               <Center>{currentCourse.name}</Center>
@@ -137,8 +101,7 @@ const StudentDashboard = () => {
                   p={4}
                   maxW="300px"
                   minW="280px"
-                  flex="1"
-                >
+                  flex="1">
                   <CardHeader>
                     <Heading size="xs">
                       {student.firstName} {student.lastName}
@@ -150,9 +113,7 @@ const StudentDashboard = () => {
                 </Card>
               ))
             ) : (
-              <Text>
-                No other students for current course {currentCourse.name}.
-              </Text>
+              <Text>No other students for current course {currentCourse.name}.</Text>
             )}
           </Flex>
         </GridItem>

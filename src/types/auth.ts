@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
-import { CourseDetails } from "./course";
-import { ICourse } from '../components/StudentDashBoard';
-
+import { ICourse, ICourses } from "./course";
 
 export interface AuthCredentials {
   username: string;
@@ -25,7 +23,7 @@ export interface UserState {
 
 export interface AuthContextType {
   user: DecodedToken | null;
-  course: CourseDetails | ICourse | null;
+  course: ICourse | ICourses | null;
   login: (credentials: AuthCredentials) => Promise<void>;
   logout: () => void;
 }

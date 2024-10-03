@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { CourseDetails } from "../types/course";
+import { ICourse, ICourses } from "../types/course";
 import { refreshAccessToken } from "./authService";
 
 // Check if the token is expired
@@ -15,7 +15,7 @@ const checkIfTokenExpired = (accessToken: string) => {
 export const fetchCourseDetails = async (
   accessToken: string,
   userRole: string
-): Promise<CourseDetails[]> => {
+): Promise<ICourse | ICourses> => {
   // Check if token has expired
   if (checkIfTokenExpired(accessToken)) {
     const { accessToken: newAccessToken } = await refreshAccessToken();
