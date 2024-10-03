@@ -101,14 +101,12 @@ const StudentDashboard = () => {
   return (
     <Box p={5} w="100%">
       <Grid templateColumns="repeat(7, 1fr)" gap={10}>
-        <GridItem colSpan={1}>
-          <Box>
-            <ModuleList
-              modules={currentCourse.modules}
-              handleModuleClick={handleModuleClick}
-              selectedModule={selectedModule}
-            />
-          </Box>
+        <GridItem colSpan={1} height="80vh" overflowY="auto" minW={"320px"}>
+          <ModuleList
+            modules={currentCourse.modules}
+            handleModuleClick={handleModuleClick}
+            selectedModule={selectedModule}
+          />
         </GridItem>
         <GridItem
           colSpan={6}
@@ -116,6 +114,7 @@ const StudentDashboard = () => {
           borderRadius="lg"
           boxShadow="md"
           p={4}
+          height="fit-content"
         >
           <Box>
             <Heading as="h2" mb={2}>
