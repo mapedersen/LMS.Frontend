@@ -3,7 +3,7 @@ import TeacherDashboard from "../components/TeacherDashboard";
 import { useAuth } from "../context/authContext";
 import { Box, Text, Heading, VStack } from "@chakra-ui/react";
 
-const Dashboard = () => {
+const DashboardPage = () => {
   const { user, course } = useAuth();
   // if (user) {
   //   console.log("The user is: ", user);
