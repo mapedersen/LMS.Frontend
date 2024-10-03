@@ -14,7 +14,7 @@ export const ToggleButton = ({
   inactiveLabel,
 }: ToggleButtonProps) => {
   return (
-    <Button mt={4} minW="220px" onClick={onToggle} colorScheme="blue">
+    <Button minW="220px" onClick={onToggle} colorScheme="blue">
       {isToggled ? activeLabel : inactiveLabel}
     </Button>
   );

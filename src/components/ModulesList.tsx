@@ -58,7 +58,7 @@ export const ModuleList = ({
       />
       {viewActiveModules ? (
         <>
-          <List spacing={4} mt={4}>
+          <List spacing={4} my={4}>
             {activeModulesToShow.map((module) => (
               <ListItem
                 key={module.id}
