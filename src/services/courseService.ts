@@ -35,7 +35,7 @@ export const fetchCourseDetails = async (
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "content-Type": "application/json",
+      "Content-Type": "application/json",
     },
   });
 

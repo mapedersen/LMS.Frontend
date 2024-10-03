@@ -20,29 +20,18 @@ interface IModuleListProps {
   selectedModule: IModule | null;
 }
 
-export const ModuleList = ({
-  modules,
-  handleModuleClick,
-  selectedModule,
-}: IModuleListProps) => {
+export const ModuleList = ({ modules, handleModuleClick, selectedModule }: IModuleListProps) => {
   const [showAllActive, setShowAllActive] = useState(false);
   const [viewActiveModules, setViewActiveModules] = useState(true);
   const today = new Date();
 
-  const activeModules = modules.filter((module) =>
-    isAfter(parseISO(module.endDate), today)
-  );
+  const activeModules = modules.filter((module) => isAfter(parseISO(module.endDate), today));
 
-  const expiredModules = modules.filter(
-    (module) => !isAfter(parseISO(module.endDate), today)
-  );
+  const expiredModules = modules.filter((module) => !isAfter(parseISO(module.endDate), today));
 
-  const activeModulesToShow = showAllActive
-    ? activeModules
-    : activeModules.slice(0, 3);
+  const activeModulesToShow = showAllActive ? activeModules : activeModules.slice(0, 3);
 
-  const hiddenActiveModulesCount =
-    activeModules.length - activeModulesToShow.length;
+  const hiddenActiveModulesCount = activeModules.length - activeModulesToShow.length;
 
   if (!modules || modules.length === 0) {
     return <Text>No modules available</Text>;
@@ -60,15 +49,8 @@ export const ModuleList = ({
         <>
           <List spacing={4} my={4}>
             {activeModulesToShow.map((module) => (
-              <ListItem
-                key={module.id}
-                onClick={() => handleModuleClick(module)}
-                cursor="pointer"
-              >
-                <ModuleCard
-                  module={module}
-                  isSelected={selectedModule?.id === module.id}
-                />
+              <ListItem key={module.id} onClick={() => handleModuleClick(module)} cursor="pointer">
+                <ModuleCard module={module} isSelected={selectedModule?.id === module.id} />
               </ListItem>
             ))}
           </List>
@@ -89,8 +71,7 @@ export const ModuleList = ({
             <ListItem
               key={module.id}
               onClick={() => handleModuleClick(module)}
-              cursor="not-allowed"
-            >
+              cursor="not-allowed">
               <ExpiredModuleCard key={module.id} module={module} />
             </ListItem>
           ))}
