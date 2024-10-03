@@ -3,7 +3,7 @@ import { AuthCredentials, AuthResponse } from "../types/auth";
 export const login = async (credentials: AuthCredentials): Promise<AuthResponse> => {
   const { username, password } = credentials;
 
-  const response = await fetch("http://localhost:5058/api/authentication/login", {
+  const response = await fetch("https://localhost:7243/api/authentication/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export const refreshAccessToken = async () => {
   const accessToken = localStorage.getItem("accessToken");
   const refreshToken = localStorage.getItem("refreshToken");
 
-  const response = await fetch("http://localhost:5058/api/authentication/refresh", {
+  const response = await fetch("https://localhost:7243/api/authentication/refresh", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

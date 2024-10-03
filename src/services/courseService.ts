@@ -28,8 +28,8 @@ export const fetchCourseDetails = async (
 
   const url =
     userRole === "Student"
-      ? "http://localhost:5058/api/courses/student"
-      : "http://localhost:5058/api/courses";
+      ? "https://localhost:7243/api/courses/student"
+      : "https://localhost:7243/api/courses";
 
   const response = await fetch(url, {
     method: "GET",
@@ -58,7 +58,7 @@ export const fetchStudentsForCourse = async (
     }
   }
 
-  const url = `http://localhost:5058/api/courses/${courseId}/students`;
+  const url = `https://localhost:7243/api/courses/${courseId}/students`;
 
   const response = await fetch(url, {
     method: "GET",
