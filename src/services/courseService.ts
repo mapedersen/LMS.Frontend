@@ -58,7 +58,7 @@ export const fetchStudentsForCourse = async (
     }
   }
 
-  const url = `http://localhost:7243/api/courses/${courseId}/students`;
+  const url = `https://localhost:7243/api/courses/${courseId}/students`;
 
   const response = await fetch(url, {
     method: "GET",
