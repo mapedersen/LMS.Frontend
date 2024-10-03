@@ -100,9 +100,6 @@ const StudentDashboard = () => {
   };
   return (
     <Box p={5} w="100%">
-      <Heading as="h2" mb={2}>
-        <Center>Course:{currentCourse.name}</Center>
-      </Heading>
       <Grid templateColumns="repeat(7, 1fr)" gap={10}>
         <GridItem colSpan={1}>
           <Box>
@@ -113,8 +110,17 @@ const StudentDashboard = () => {
             />
           </Box>
         </GridItem>
-        <GridItem colSpan={6} bg="gray.50" borderRadius="lg" boxShadow="md">
+        <GridItem
+          colSpan={6}
+          bg="gray.50"
+          borderRadius="lg"
+          boxShadow="md"
+          p={4}
+        >
           <Box>
+            <Heading as="h2" mb={2}>
+              <Center>{currentCourse.name}</Center>
+            </Heading>
             {selectedModule ? (
               <ActiveModule selectedModule={selectedModule} />
             ) : (
