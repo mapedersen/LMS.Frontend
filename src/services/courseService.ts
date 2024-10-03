@@ -45,31 +45,26 @@ export const fetchCourseDetails = async (
   return response.json();
 };
 
-export const fetchStudentsForCourse = async (
+export const createCourse = async (
   accessToken: string,
-  courseId: number
-): Promise<any[]> => {
+  course: { name: string; description: string; startDate: string }
+) => {
   if (checkIfTokenExpired(accessToken)) {
     const { accessToken: newAccessToken } = await refreshAccessToken();
-    if (newAccessToken) {
-      accessToken = newAccessToken;
-    } else {
-      throw new Error("Failed to refresh access token, please log in again.");
-    }
+    accessToken = newAccessToken || accessToken;
   }
 
-  const url = `https://localhost:7243/api/courses/${courseId}/students`;
-
-  const response = await fetch(url, {
-    method: "GET",
+  const response = await fetch("https://localhost:7243/api/courses", {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "content-Type": "application/json",
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify(course),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch students for course");
+    throw new Error("Failed to create the course");
   }
 
   return response.json();
