@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Button, Heading, VStack, useToast } from "@chakra-ui/react";
 import FormField from "./ui/FormFields";
 
 const AddActivity = () => {
-  const [title, setTitle] = useState("");
+  const { moduleId } = useParams<{ moduleId: string }>();
+  const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
@@ -22,9 +22,9 @@ const AddActivity = () => {
     }
 
     const activityData = {
-      title,
+      name,
       description,
-      dueDate,
+      moduleId,
     };
 
     try {
@@ -46,9 +46,8 @@ const AddActivity = () => {
           duration: 5000,
           isClosable: true,
         });
-        setTitle("");
+        setName("");
         setDescription("");
-        setDueDate("");
         navigate("/dashboard");
       } else {
         toast({
@@ -79,12 +78,12 @@ const AddActivity = () => {
       </Heading>
       <VStack spacing={4} as="form" onSubmit={handleSubmit}>
         <FormField
-          id="title"
-          label="Title"
+          id="name"
+          label="Name"
           type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Activity Title"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Activity Name"
           isRequired
         />
         <FormField
@@ -94,14 +93,6 @@ const AddActivity = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Activity Description"
-          isRequired
-        />
-        <FormField
-          id="dueDate"
-          label="Due Date"
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
           isRequired
         />
         <Button colorScheme="primary" isLoading={isLoading} type="submit" width="full">

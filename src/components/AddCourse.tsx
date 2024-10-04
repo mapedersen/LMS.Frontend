@@ -39,6 +39,7 @@ const AddCourse = () => {
       });
 
       if (response.ok) {
+        const course = await response.json();
         toast({
           title: "Course created.",
           description: "The course has been created successfully.",
@@ -49,7 +50,7 @@ const AddCourse = () => {
         setName("");
         setDescription("");
         setStartDate("");
-        navigate("/dashboard");
+        navigate(`/add-module/${course.id}`);
       } else {
         toast({
           title: "Error",

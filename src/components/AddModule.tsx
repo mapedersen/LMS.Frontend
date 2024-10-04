@@ -1,34 +1,21 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Heading,
-  VStack,
-  useToast,
-  Select,
-  FormControl,
-  FormLabel,
-} from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Box, Button, Heading, VStack, useToast } from "@chakra-ui/react";
 import FormField from "./ui/FormFields";
-import { useAuth } from "../context/authContext";
-import { ICourses } from "../types/course";
 
 const AddModule = () => {
+  const { courseId } = useParams<{ courseId: string }>();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [courseId, setCourseId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
-  const { course } = useAuth() as { course: ICourses | null };
-
-  const courses = course?.courses || [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const accessToken = localStorage.getItem("accessToken");
 
     if (!accessToken) {
@@ -56,6 +43,7 @@ const AddModule = () => {
       });
 
       if (response.ok) {
+        const module = await response.json();
         toast({
           title: "Module created.",
           description: "The module has been created successfully.",
@@ -67,8 +55,7 @@ const AddModule = () => {
         setDescription("");
         setStartDate("");
         setEndDate("");
-        setCourseId("");
-        navigate("/dashboard");
+        navigate(`/add-activity/${module.id}`);
       } else {
         toast({
           title: "Error",
@@ -79,7 +66,6 @@ const AddModule = () => {
         });
       }
     } catch (error) {
-      console.error("Error creating module:", error);
       toast({
         title: "Error",
         description: "There was an error creating the module.",
@@ -116,19 +102,6 @@ const AddModule = () => {
           placeholder="Module Description"
           isRequired
         />
-        <FormControl id="course" isRequired>
-          <FormLabel>Course</FormLabel>
-          <Select
-            placeholder="Select course"
-            value={courseId}
-            onChange={(e) => setCourseId(e.target.value)}>
-            {courses.map((course) => (
-              <option key={course.id} value={course.id}>
-                {course.name}
-              </option>
-            ))}
-          </Select>
-        </FormControl>
         <FormField
           id="startDate"
           label="Start Date"
@@ -145,7 +118,6 @@ const AddModule = () => {
           onChange={(e) => setEndDate(e.target.value)}
           isRequired
         />
-
         <Button colorScheme="primary" isLoading={isLoading} type="submit" width="full">
           Add Module
         </Button>
