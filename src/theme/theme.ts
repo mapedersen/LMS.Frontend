@@ -3,52 +3,52 @@ import { extendTheme } from "@chakra-ui/react";
 const theme = extendTheme({
   colors: {
     primary: {
-      50: "#e6f7f7",
-      100: "#b3e5e5",
-      200: "#81d4d4",
-      300: "#4fc3c3",
-      400: "#29b6b6",
-      500: "#03a9a9",
-      600: "#039b9b",
-      700: "#028888",
-      800: "#027777",
-      900: "#015757",
+      50: "#e0f5f5", // Lightened slightly for a fresher tone
+      100: "#b0e4e4",
+      200: "#7ed2d2",
+      300: "#4dc1c1",
+      400: "#26b1b1", // Tweaked for a richer teal
+      500: "#009a9a", // Slightly deeper primary color for modernity
+      600: "#008a8a",
+      700: "#007575", // Balanced teal for button hover effects
+      800: "#006161",
+      900: "#004646", // Darkened for navbar or footer backgrounds
     },
     secondary: {
-      50: "#fff3e0",
+      50: "#fff4e6", // Lightened for a warmer look
       100: "#ffe0b2",
-      200: "#ffcc80",
-      300: "#ffb74d",
-      400: "#ffa726",
-      500: "#ff9800",
-      600: "#fb8c00",
-      700: "#f57c00",
-      800: "#ef6c00",
-      900: "#e65100",
+      200: "#ffcb80",
+      300: "#ffb24d",
+      400: "#ff9f29", // Slightly refined orange for modern vibrancy
+      500: "#ff8900", // Tweaked to give it a bold, striking feel
+      600: "#e57a00",
+      700: "#c36900", // Darker orange for hover and contrast
+      800: "#9f5700",
+      900: "#703c00", // Deep brownish-orange for footer or highlights
     },
     accent: {
-      50: "#e3f2fd",
-      100: "#bbdefb",
-      200: "#90caf9",
-      300: "#64b5f6",
-      400: "#42a5f5",
-      500: "#2196f3",
-      600: "#1e88e5",
-      700: "#1976d2",
-      800: "#1565c0",
-      900: "#0d47a1",
+      50: "#eaf3fc",
+      100: "#c8ddf9",
+      200: "#a6c8f6",
+      300: "#84b2f3",
+      400: "#5e9def", // Vibrant for strong accents
+      500: "#2978e5", // Bolder and more modern for action elements
+      600: "#256ace",
+      700: "#205bb7",
+      800: "#1a4a99",
+      900: "#123474", // Dark navy blue for focus areas or bold text
     },
     neutral: {
-      50: "#f9f9f9",
-      100: "#f0f0f0",
-      200: "#e0e0e0",
-      300: "#d0d0d0",
-      400: "#b0b0b0",
-      500: "#909090",
-      600: "#707070",
-      700: "#505050",
-      800: "#303030",
-      900: "#101010",
+      50: "#f7f7f7", // Slightly toned down for softer backgrounds
+      100: "#eeeeee",
+      200: "#dddddd", // Improved for better content readability
+      300: "#cccccc",
+      400: "#aaaaaa",
+      500: "#888888", // Darkened for a cleaner look
+      600: "#666666", // For borders and light text
+      700: "#444444", // Ideal for body text
+      800: "#222222", // Dark enough for contrast
+      900: "#0f0f0f", // Near-black for strong emphasis or backgrounds
     },
   },
 });
