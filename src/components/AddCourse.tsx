@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Heading, VStack, useToast } from "@chakra-ui/react";
 import FormField from "./ui/FormFields";
+import { refreshAccessToken } from "../services/authService";
 
 const AddCourse = () => {
   const [name, setName] = useState("");
@@ -17,8 +18,21 @@ const AddCourse = () => {
     const accessToken = localStorage.getItem("accessToken");
 
     if (!accessToken) {
-      console.error("Access token is missing");
-      return;
+      console.error("Access token is missing. Attempting to refresh token...");
+      // Assuming you have a function to refresh the token
+      const newAccessToken = await refreshAccessToken();
+      if (!newAccessToken) {
+        toast({
+          title: "Error",
+          description: "Unable to refresh access token. Please log in again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        navigate("/login");
+        return;
+      }
+      localStorage.setItem("accessToken", newAccessToken.accessToken);
     }
 
     const courseData = {
@@ -50,7 +64,7 @@ const AddCourse = () => {
         setName("");
         setDescription("");
         setStartDate("");
-        navigate(`/add-module/${course.id}`);
+        navigate(`/dashboard/add-module/${course.id}`);
       } else {
         toast({
           title: "Error",
