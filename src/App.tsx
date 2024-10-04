@@ -2,8 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
 import CreatePage from "./pages/CreatePage";
-import { Navbar } from "./components";
 import UsersPage from "./pages/UsersPage";
+import { Navbar } from "./components/Navbar";
 
 const App = () => {
   return (
