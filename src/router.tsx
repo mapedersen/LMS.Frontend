@@ -25,23 +25,23 @@ const router = createBrowserRouter([
         path: "users",
         element: <UsersPage />,
       },
+      {
+        path: "create/:type",
+        element: <CreatePage />,
+      },
+      {
+        path: "add-course",
+        element: <AddCourse />,
+      },
+      {
+        path: "add-module/:courseId",
+        element: <AddModule />,
+      },
+      {
+        path: "add-activity/:moduleId",
+        element: <AddActivity />,
+      },
     ],
-  },
-  {
-    path: "/create/:type",
-    element: <CreatePage />,
-  },
-  {
-    path: "/add-course",
-    element: <AddCourse />,
-  },
-  {
-    path: "/add-module/:courseId",
-    element: <AddModule />,
-  },
-  {
-    path: "/add-activity/:moduleId",
-    element: <AddActivity />,
   },
 ]);
 
