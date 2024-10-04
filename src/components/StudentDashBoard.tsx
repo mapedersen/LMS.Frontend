@@ -1,124 +1,206 @@
 import { useEffect, useState } from "react";
 import {
-  Grid,
-  GridItem,
   Box,
-  Center,
   Heading,
-  Text,
+  SimpleGrid,
+  Center,
   Card,
   CardHeader,
-  CardBody,
+  Text,
+  Badge,
   Flex,
+  Avatar,
+  Button,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { fetchStudentsForCourse } from "../services/courseService";
-import { ActiveModule } from "./ActiveModule";
-import { ModuleList } from "./ModulesList";
 import { IUser } from "../types/user";
-import { ICourse, IModule } from "../types/course";
+import { IActivity, ICourse, IModule } from "../types/course";
+import { format, isPast } from "date-fns";
+import { DecodedToken } from "../types/auth";
+
+const CARD_WIDTH = "250px";
+const CARD_HEIGHT = "200px";
 
 const StudentDashboard = () => {
-  const { user, course } = useAuth();
-  const [currentCourse, setCurrentCourse] = useState<ICourse | null>(null);
+  const { user, course } = useAuth() as { user: DecodedToken; course: ICourse };
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
   const [studentsForCourse, setStudentsForCourse] = useState<IUser[] | []>([]);
+  const [showPastModules, setShowPastModules] = useState(false);
 
   useEffect(() => {
-    if (course && !currentCourse) {
-      setCurrentCourse(course as ICourse);
-    }
-
-    if (currentCourse && user) {
+    if (course && user) {
       const fetchStudents = async () => {
         try {
           const accessToken = localStorage.getItem("accessToken");
           if (accessToken) {
-            const students = await fetchStudentsForCourse(accessToken, currentCourse.id);
+            const students = await fetchStudentsForCourse(accessToken, course.id);
             setStudentsForCourse(students);
           } else {
             console.error("No access token available.");
           }
         } catch (error) {
-          console.error("Error fetching students:", error);
+          console.error("Failed to fetch students:", error);
         }
       };
       fetchStudents();
     }
-  }, [currentCourse, user]);
-
-  useEffect(() => {
-    if (currentCourse && currentCourse.modules.length > 0 && !selectedModule) {
-      const activeModules = currentCourse.modules.filter(
-        (module) => new Date(module.endDate) >= new Date()
-      );
-      if (activeModules.length > 0) {
-        setSelectedModule(activeModules[0]);
-      }
-    }
-  }, [currentCourse, selectedModule]);
-
-  if (!currentCourse) return <p>No Course</p>;
+  }, [course, user]);
 
   const handleModuleClick = (module: IModule) => {
-    setSelectedModule(module);
+    if (selectedModule?.id === module.id) {
+      setSelectedModule(null); // Unselect the module if it is already selected
+    } else {
+      setSelectedModule(module); // Select the module
+    }
   };
+
+  const filteredModules = course
+    ? course.modules.filter((module) =>
+        showPastModules ? isPast(new Date(module.endDate)) : !isPast(new Date(module.endDate))
+      )
+    : [];
+
   return (
-    <Box p={5} w="100%">
-      <Grid templateColumns="repeat(7, 1fr)" gap={10}>
-        <GridItem colSpan={1} height="80vh" overflowY="auto" minW={"320px"}>
-          <ModuleList
-            modules={currentCourse.modules}
-            handleModuleClick={handleModuleClick}
-            selectedModule={selectedModule}
-          />
-        </GridItem>
-        <GridItem
-          colSpan={6}
-          bg="gray.50"
-          borderRadius="lg"
-          boxShadow="md"
-          p={4}
-          height="fit-content">
-          <Box>
-            <Heading as="h2" mb={2}>
-              <Center>{currentCourse.name}</Center>
-            </Heading>
-            {selectedModule ? (
-              <ActiveModule selectedModule={selectedModule} />
-            ) : (
-              <Text>No Modules found.</Text>
-            )}
+    <Center>
+      <Box p={5} w="100%" maxW="1200px" mx="auto">
+        <Heading as="h2" mb={5} textAlign="center">
+          Welcome, {user?.role}
+        </Heading>
+
+        {/* Course details */}
+        {course && (
+          <Box mb={8}>
+            <Card
+              mx="auto"
+              borderWidth="2px"
+              borderRadius="lg"
+              overflow="hidden"
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              position="relative"
+              bg="teal.50"
+              p={5}>
+              <CardHeader display="flex" justifyContent="space-between" alignItems="center">
+                <Box>
+                  <Heading size="md">{course.name}</Heading>
+                  <Text fontSize="sm" color="gray.500">
+                    Start Date: {format(new Date(course.startDate), "MMMM dd, yyyy")}
+                  </Text>
+                </Box>
+                <Badge colorScheme="teal">{course.modules.length} Modules</Badge>
+              </CardHeader>
+              <Box p={4} flex="1" overflow="hidden">
+                <Text mb={2} noOfLines={3} overflow="hidden" textOverflow="ellipsis">
+                  {course.description}
+                </Text>
+              </Box>
+              {/* Fellow Students */}
+              {studentsForCourse.length > 0 && (
+                <Box mt={4}>
+                  <Heading size="sm" mb={2}>
+                    Fellow Students
+                  </Heading>
+                  <SimpleGrid columns={3} spacing={4}>
+                    {studentsForCourse.map((student: IUser) => (
+                      <Flex key={student.id} alignItems="center">
+                        <Avatar name={student.firstName} mr={2} />
+                        <Text>{student.firstName}</Text>
+                      </Flex>
+                    ))}
+                  </SimpleGrid>
+                </Box>
+              )}
+            </Card>
           </Box>
-          {/* Display fellow student*/}
-          <Flex wrap="wrap" justify="center" gap={4} mt={4}>
-            {studentsForCourse.length > 0 ? (
-              studentsForCourse.map((student) => (
+        )}
+
+        {/* Modules grid */}
+        {course && (
+          <Box mb={8}>
+            <Flex justifyContent="space-between" alignItems="center" mb={4}>
+              <Heading size="lg">Modules</Heading>
+              <Button onClick={() => setShowPastModules(!showPastModules)}>
+                {showPastModules ? "Show Active Modules" : "Show Past Modules"}
+              </Button>
+            </Flex>
+            <SimpleGrid columns={3} spacing={6}>
+              {filteredModules.map((module: IModule) => (
                 <Card
-                  key={student.id}
-                  border="1px"
-                  borderColor="gray.200"
-                  p={4}
-                  maxW="300px"
-                  minW="280px"
-                  flex="1">
+                  key={module.id}
+                  cursor="pointer"
+                  onClick={() => handleModuleClick(module)}
+                  _hover={{ boxShadow: "2xl" }}
+                  width={CARD_WIDTH}
+                  height={CARD_HEIGHT}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  position="relative"
+                  bg={selectedModule?.id === module.id ? "teal.100" : "white"}>
                   <CardHeader>
-                    <Heading size="xs">
-                      {student.firstName} {student.lastName}
-                    </Heading>
+                    <Heading size="md">{module.name}</Heading>
+                    <Text fontSize="sm" color="gray.500">
+                      {format(new Date(module.startDate), "MMMM dd, yyyy")} -{" "}
+                      {format(new Date(module.endDate), "MMMM dd, yyyy")}
+                    </Text>
                   </CardHeader>
-                  <CardBody>
-                    <Text fontSize="sm">Email: {student.email}</Text>
-                  </CardBody>
+                  <Box p={4} pt={0} flex="1" overflow="hidden">
+                    <Text noOfLines={2} overflow="hidden" textOverflow="ellipsis">
+                      {module.description}
+                    </Text>
+                    <Box position="absolute" bottom="4" left="4">
+                      <Badge colorScheme="teal">{module.activities.length} Activities</Badge>
+                    </Box>
+                  </Box>
                 </Card>
-              ))
-            ) : (
-              <Text>No other students for current course {currentCourse.name}.</Text>
-            )}
-          </Flex>
-        </GridItem>
-      </Grid>
-    </Box>
+              ))}
+            </SimpleGrid>
+          </Box>
+        )}
+
+        {/* Activities grid */}
+        {selectedModule && (
+          <Box mb={8}>
+            <Heading size="lg" mb={4}>
+              Activities for {selectedModule.name}
+            </Heading>
+            <SimpleGrid columns={3} spacing={6}>
+              {selectedModule.activities.map((activity: IActivity) => (
+                <Card
+                  key={activity.id}
+                  _hover={{ boxShadow: "2xl" }}
+                  width={CARD_WIDTH}
+                  height={CARD_HEIGHT}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                  position="relative">
+                  <CardHeader>
+                    <Heading size="md">{activity.name}</Heading>
+                    <Text fontSize="sm" color="gray.500">
+                      Due Date: {format(new Date(activity.endDate), "MMMM dd, yyyy")}
+                    </Text>
+                  </CardHeader>
+                  <Box p={4} flex="1" overflow="hidden">
+                    <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
+                      {activity.description}
+                    </Text>
+                  </Box>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </Box>
+        )}
+      </Box>
+    </Center>
   );
 };
 

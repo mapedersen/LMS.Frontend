@@ -4,13 +4,7 @@ import { useAuth } from "../context/authContext";
 import { Box, Text, Heading, VStack } from "@chakra-ui/react";
 
 const DashboardPage = () => {
-  const { user, course } = useAuth();
-  // if (user) {
-  //   console.log("The user is: ", user);
-  // }
-  // if (course) {
-  //   console.log("The course is: ", course);
-  // }
+  const { user } = useAuth();
 
   if (!user) {
     return (
