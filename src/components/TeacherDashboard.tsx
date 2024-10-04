@@ -6,7 +6,6 @@ import {
   Heading,
   SimpleGrid,
   Text,
-  VStack,
   Grid,
   GridItem,
   Center,
