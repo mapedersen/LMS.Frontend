@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Heading, VStack, useToast } from "@chakra-ui/react";
-import CourseFormFields from "./ui/CourseFormFields";
+import FormField from "./ui/FormFields";
 
 const AddCourse = () => {
   const [name, setName] = useState("");
@@ -78,13 +78,31 @@ const AddCourse = () => {
         Add New Course
       </Heading>
       <VStack spacing={4} as="form" onSubmit={handleSubmit}>
-        <CourseFormFields
-          name={name}
-          setName={setName}
-          description={description}
-          setDescription={setDescription}
-          startDate={startDate}
-          setStartDate={setStartDate}
+        <FormField
+          id="name"
+          label="Name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Course Name"
+          isRequired
+        />
+        <FormField
+          id="description"
+          label="Description"
+          type="textarea"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Course Description"
+          isRequired
+        />
+        <FormField
+          id="startDate"
+          label="Start Date"
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          isRequired
         />
         <Button colorScheme="primary" isLoading={isLoading} type="submit" width="full">
           Add Course
