@@ -5,10 +5,18 @@ interface Module {
   name: string;
   description: string;
   courseId: number;
+  startDate: string;
+  endDate: string;
 }
 
 const AddModule = () => {
-  const [moduleData, setModuleData] = useState<Module>({ name: "", description: "", courseId: 0 });
+  const [moduleData, setModuleData] = useState<Module>({
+    name: "",
+    description: "",
+    courseId: 0,
+    startDate: "",
+    endDate: ""
+  });
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
@@ -39,7 +47,7 @@ const AddModule = () => {
           duration: 3000,
           isClosable: true,
         });
-        setModuleData({ name: "", description: "", courseId: 0 });
+        setModuleData({ name: "", description: "", courseId: 0, startDate: "", endDate: "" });
       } else {
         throw new Error("Failed to add module");
       }
@@ -81,6 +89,26 @@ const AddModule = () => {
           value={moduleData.courseId}
           onChange={handleChange}
           placeholder="Enter related course ID"
+        />
+      </FormControl>
+
+      <FormControl mb={4}>
+        <FormLabel>Start Date</FormLabel>
+        <Input
+          name="startDate"
+          type="datetime-local"
+          value={moduleData.startDate}
+          onChange={handleChange}
+        />
+      </FormControl>
+
+      <FormControl mb={4}>
+        <FormLabel>End Date</FormLabel>
+        <Input
+          name="endDate"
+          type="datetime-local"
+          value={moduleData.endDate}
+          onChange={handleChange}
         />
       </FormControl>
 
