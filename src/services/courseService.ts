@@ -99,3 +99,23 @@ export const createCourse = async (
 
   return response.json();
 };
+
+export const deleteCourse = async (accessToken: string, courseId: string) => {
+  if (checkIfTokenExpired(accessToken)) {
+    const { accessToken: newAccessToken } = await refreshAccessToken();
+    accessToken = newAccessToken || accessToken;
+  }
+
+  const response = await fetch(`https://localhost:7243/api/courses/${courseId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete the course");
+  }
+
+  return response.json();
+};

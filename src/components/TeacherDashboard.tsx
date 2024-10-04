@@ -8,11 +8,14 @@ import {
   Text,
   Button,
   Badge,
+  IconButton,
 } from "@chakra-ui/react";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
 import { useState } from "react";
 import { format } from "date-fns";
+import { deleteCourse } from "../services/courseService";
 
 const MAX_ITEMS = 5;
 const CARD_WIDTH = "250px";
@@ -53,6 +56,39 @@ const TeacherDashboard = () => {
     }
   };
 
+  const handleEditCourse = (course: ICourse) => {
+    // Handle course edit logic here
+    console.log("Edit course:", course);
+  };
+
+  const handleDeleteCourse = async (course: ICourse) => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      console.error("Access token is missing");
+      return;
+    }
+    try {
+      await deleteCourse(accessToken, course.id.toString());
+      toast({
+        title: "Course deleted.",
+        description: `Course ${course.name} has been deleted successfully.`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      // Optionally, refresh the course list or remove the deleted course from the state
+    } catch (error) {
+      toast({
+        title: "Error deleting course.",
+        description: `Failed to delete course ${course.name}.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Box p={5} w="100%">
       {/* Courses grid */}
@@ -90,6 +126,27 @@ const TeacherDashboard = () => {
                 <Box position="absolute" bottom="4" left="4">
                   <Badge colorScheme="teal">{course.modules.length} Modules</Badge>
                 </Box>
+              </Box>
+              <Box position="absolute" top="2" right="2">
+                <IconButton
+                  aria-label="Edit Course"
+                  icon={<EditIcon />}
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditCourse(course);
+                  }}
+                  mr={2}
+                />
+                <IconButton
+                  aria-label="Delete Course"
+                  icon={<DeleteIcon />}
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteCourse(course);
+                  }}
+                />
               </Box>
             </Card>
           ))}

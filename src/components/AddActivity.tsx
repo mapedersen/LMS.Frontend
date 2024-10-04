@@ -1,191 +1,223 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
-  Button,
   Heading,
-  VStack,
-  useToast,
-  Select,
-  Input,
-  Textarea,
+  SimpleGrid,
+  Center,
+  Card,
+  CardHeader,
   Text,
+  Button,
+  Badge,
+  IconButton,
 } from "@chakra-ui/react";
+import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { useAuth } from "../context/authContext";
+import { ICourses, ICourse, IModule, IActivity } from "../types/course";
+import { useState } from "react";
+import { format } from "date-fns";
 
-const AddActivity = () => {
-  const { moduleId } = useParams<{ moduleId: string }>();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [typeId, setTypeId] = useState<number | null>(null);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [moduleEndDate, setModuleEndDate] = useState<Date | null>(null);
-  const [moduleData, setModuleData] = useState<any | null>(null); // State to hold module data
-  const navigate = useNavigate();
-  const toast = useToast();
+const MAX_ITEMS = 5;
+const CARD_WIDTH = "250px";
+const CARD_HEIGHT = "200px";
 
-  useEffect(() => {
-    // Fetch module details from the server
-    const fetchModuleDetails = async () => {
-      const accessToken = localStorage.getItem("accessToken");
+const TeacherDashboard = () => {
+  const { course } = useAuth() as { course: ICourses };
+  const [showAllCourses, setShowAllCourses] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
+  const [showAllModules, setShowAllModules] = useState(false);
+  const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
 
-      if (!accessToken) {
-        console.error("Access token is missing");
-        return;
-      }
+  if (!course) return <p>No Course</p>;
 
-      try {
-        const response = await fetch(`https://localhost:7243/api/modules/${moduleId}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+  const courseList = showAllCourses ? course.courses : course.courses.slice(0, MAX_ITEMS);
+  const moduleList = selectedCourse
+    ? showAllModules
+      ? selectedCourse.modules
+      : selectedCourse.modules.slice(0, MAX_ITEMS)
+    : [];
 
-        if (response.ok) {
-          const moduleData = await response.json();
-          setModuleEndDate(new Date(moduleData.endDate));
-          setModuleData(moduleData); // Set module data
-        } else {
-          console.error("Failed to fetch module details");
-        }
-      } catch (error) {
-        console.error("Error fetching module details:", error);
-      }
-    };
-
-    fetchModuleDetails();
-  }, [moduleId]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken) {
-      console.error("Access token is missing");
-      return;
-    }
-
-    // Validate end date
-    if (moduleEndDate && new Date(endDate) > moduleEndDate) {
-      toast({
-        title: "Invalid end date.",
-        description: "End date cannot exceed the module's end date.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    const activityData = {
-      name,
-      description,
-      typeId,
-      startDate,
-      endDate,
-      moduleId,
-    };
-
-    try {
-      setIsLoading(true);
-      const response = await fetch("https://localhost:7243/api/activities", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(activityData),
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Activity Created",
-          description: "The activity has been created successfully.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-        navigate(`/modules/${moduleId}`);
-      } else {
-        toast({
-          title: "Error",
-          description: "There was an error creating the activity.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "There was an error creating the activity.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsLoading(false);
+  const handleCourseClick = (course: ICourse) => {
+    if (selectedCourse?.id === course.id) {
+      setSelectedCourse(null); // Unselect the course if it is already selected
+      setSelectedModule(null); // Reset selected module when the course is unselected
+    } else {
+      setSelectedCourse(course); // Select the course
+      setShowAllModules(false); // Reset module view when a new course is selected
+      setSelectedModule(null); // Reset selected module when a new course is selected
     }
   };
 
+  const handleModuleClick = (module: IModule) => {
+    if (selectedModule?.id === module.id) {
+      setSelectedModule(null); // Unselect the module if it is already selected
+    } else {
+      setSelectedModule(module); // Select the module
+    }
+  };
+
+  const handleEditCourse = (course: ICourse) => {
+    // Handle course edit logic here
+    console.log("Edit course:", course);
+  };
+
+  const handleDeleteCourse = (course: ICourse) => {
+    // Handle course delete logic here
+    console.log("Delete course:", course);
+  };
+
   return (
-    <Box p={5} maxW="600px" mx="auto" mt="20" bg="white" borderRadius="md" boxShadow="md">
-      {moduleData && (
-        <Box mb={5} p={4} bg="gray.100" borderRadius="md">
-          <Text fontSize="lg" fontWeight="bold">
-            Module: {moduleData.name}
-          </Text>
-          <Text>Description: {moduleData.description}</Text>
+    <Box p={5} w="100%">
+      {/* Courses grid */}
+      <Box mb={8}>
+        <Heading size="lg" mb={4}>
+          Courses
+        </Heading>
+        <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
+          {courseList.map((course: ICourse) => (
+            <Card
+              key={course.id}
+              cursor="pointer"
+              onClick={() => handleCourseClick(course)}
+              _hover={{ boxShadow: "2xl" }}
+              width={CARD_WIDTH}
+              height={CARD_HEIGHT}
+              borderWidth="1px"
+              borderRadius="lg"
+              overflow="hidden"
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              position="relative"
+              bg={selectedCourse?.id === course.id ? "teal.100" : "white"}>
+              <CardHeader>
+                <Heading size="md">{course.name}</Heading>
+                <Text fontSize="sm" color="gray.500">
+                  Start Dates: {format(new Date(course.startDate), "MMMM dd, yyyy")}
+                </Text>
+              </CardHeader>
+              <Box p={4} flex="1" overflow="hidden">
+                <Text mb={2} noOfLines={2} overflow="hidden" textOverflow="ellipsis">
+                  {course.description}
+                </Text>
+                <Box position="absolute" bottom="4" left="4">
+                  <Badge colorScheme="teal">{course.modules.length} Modules</Badge>
+                </Box>
+              </Box>
+              <Box position="absolute" top="2" right="2">
+                <IconButton
+                  aria-label="Edit Course"
+                  icon={<EditIcon />}
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleEditCourse(course);
+                  }}
+                  mr={2}
+                />
+                <IconButton
+                  aria-label="Delete Course"
+                  icon={<DeleteIcon />}
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteCourse(course);
+                  }}
+                />
+              </Box>
+            </Card>
+          ))}
+        </SimpleGrid>
+        {course.courses.length > MAX_ITEMS && (
+          <Center mt={4}>
+            <Button onClick={() => setShowAllCourses(!showAllCourses)}>
+              {showAllCourses ? "Show Less" : "Show More"}
+            </Button>
+          </Center>
+        )}
+      </Box>
+
+      {/* Modules grid */}
+      {selectedCourse && (
+        <Box mb={8}>
+          <Heading size="lg" mb={4}>
+            Modules for {selectedCourse.name}
+          </Heading>
+          <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
+            {moduleList.map((module: IModule) => (
+              <Card
+                key={module.id}
+                cursor="pointer"
+                onClick={() => handleModuleClick(module)}
+                _hover={{ boxShadow: "2xl" }}
+                width={CARD_WIDTH}
+                height={CARD_HEIGHT}
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                position="relative"
+                bg={selectedModule?.id === module.id ? "teal.100" : "white"}>
+                <CardHeader>
+                  <Heading size="md">{module.name}</Heading>
+                </CardHeader>
+                <Box p={4} flex="1" overflow="hidden">
+                  <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
+                    {module.description}
+                  </Text>
+                  <Box position="absolute" bottom="4" left="4">
+                    <Badge colorScheme="teal">{module.activities.length} Activities</Badge>
+                  </Box>
+                </Box>
+              </Card>
+            ))}
+          </SimpleGrid>
+          {selectedCourse.modules.length > MAX_ITEMS && (
+            <Center mt={4}>
+              <Button onClick={() => setShowAllModules(!showAllModules)}>
+                {showAllModules ? "Show Less" : "Show More"}
+              </Button>
+            </Center>
+          )}
         </Box>
       )}
-      <Heading as="h2" size="lg" mb={5} textAlign="center" color="primary.600">
-        Add New Activity
-      </Heading>
-      <VStack spacing={4} as="form" onSubmit={handleSubmit}>
-        <Input
-          placeholder="Activity Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <Textarea
-          placeholder="Activity Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <Select
-          placeholder="Select Type"
-          value={typeId ?? ""}
-          onChange={(e) => setTypeId(Number(e.target.value))}
-          required>
-          <option value="1">Lecture</option>
-          <option value="2">Submission</option>
-          <option value="3">Group Assignment</option>
-          <option value="4">Presentation</option>
-        </Select>
-        <Input
-          type="date"
-          placeholder="Start Date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
-        />
-        <Input
-          type="date"
-          placeholder="End Date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
-        <Button type="submit" isLoading={isLoading} colorScheme="teal" width="full">
-          Create Activity
-        </Button>
-      </VStack>
+
+      {/* Activities grid */}
+      {selectedModule && (
+        <Box mb={8}>
+          <Heading size="lg" mb={4}>
+            Activities for {selectedModule.name}
+          </Heading>
+          <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
+            {selectedModule.activities.map((activity: IActivity) => (
+              <Card
+                key={activity.id}
+                _hover={{ boxShadow: "2xl" }}
+                width={CARD_WIDTH}
+                height={CARD_HEIGHT}
+                borderWidth="1px"
+                borderRadius="lg"
+                overflow="hidden"
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                position="relative">
+                <CardHeader>
+                  <Heading size="md">{activity.name}</Heading>
+                </CardHeader>
+                <Box p={4} flex="1" overflow="hidden">
+                  <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
+                    {activity.description}
+                  </Text>
+                </Box>
+              </Card>
+            ))}
+          </SimpleGrid>
+        </Box>
+      )}
     </Box>
   );
 };
 
-export default AddActivity;
+export default TeacherDashboard;
