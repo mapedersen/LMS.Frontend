@@ -37,13 +37,22 @@ const TeacherDashboard = () => {
     : [];
 
   const handleCourseClick = (course: ICourse) => {
-    setSelectedCourse(course);
-    setShowAllModules(false); // Reset module view when a new course is selected
-    setSelectedModule(null); // Reset selected module when a new course is selected
+    if (selectedCourse?.id === course.id) {
+      setSelectedCourse(null); // Unselect the course if it is already selected
+      setSelectedModule(null); // Reset selected module when the course is unselected
+    } else {
+      setSelectedCourse(course); // Select the course
+      setShowAllModules(false); // Reset module view when a new course is selected
+      setSelectedModule(null); // Reset selected module when a new course is selected
+    }
   };
 
   const handleModuleClick = (module: IModule) => {
-    setSelectedModule(module);
+    if (selectedModule?.id === module.id) {
+      setSelectedModule(null); // Unselect the module if it is already selected
+    } else {
+      setSelectedModule(module); // Select the module
+    }
   };
 
   return (
