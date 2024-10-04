@@ -18,7 +18,7 @@ import { ActiveModule } from "./ActiveModule";
 
 const MAX_COURSES = 5; // Max courses to display initially
 
-const StudentDashboard = () => {
+const TeacherDashboard = () => {
   const { user, course } = useAuth();
   const [currentCourse, setCurrentCourse] = useState<ICourse | null>(null);
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
@@ -104,4 +104,4 @@ const StudentDashboard = () => {
   );
 };
 
-export default StudentDashboard;
+export default TeacherDashboard;
