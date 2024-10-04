@@ -27,7 +27,7 @@ const Navbar = () => {
         </Heading>
         <Spacer />
         <Flex gap={4}>
-          <Button as={Link} to="/create/course" colorScheme="whiteAlpha" variant="solid">
+          <Button as={Link} to="/dashboard/add-course" colorScheme="whiteAlpha" variant="solid">
             Create Course
           </Button>
           <Button as={Link} to="/dashboard/users" colorScheme="whiteAlpha" variant="solid">
