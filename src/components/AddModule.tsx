@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { Box, Button, FormControl, FormLabel, Input, Textarea, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  useToast,
+  Heading,
+  VStack,
+} from "@chakra-ui/react";
 
 interface Module {
   name: string;
@@ -15,7 +25,7 @@ const AddModule = () => {
     description: "",
     courseId: 0,
     startDate: "",
-    endDate: ""
+    endDate: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
@@ -42,21 +52,34 @@ const AddModule = () => {
 
       if (response.ok) {
         toast({
-          title: "Module added successfully.",
+          title: "Module created.",
+          description: "The module has been created successfully.",
           status: "success",
-          duration: 3000,
+          duration: 5000,
           isClosable: true,
         });
-        setModuleData({ name: "", description: "", courseId: 0, startDate: "", endDate: "" });
+        setModuleData({
+          name: "",
+          description: "",
+          courseId: 0,
+          startDate: "",
+          endDate: "",
+        });
       } else {
-        throw new Error("Failed to add module");
+        toast({
+          title: "Error",
+          description: "There was an error creating the module.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (error) {
       toast({
-        title: "Error adding module.",
-        description: "Unable to add module",
+        title: "Error",
+        description: "There was an error creating the module.",
         status: "error",
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
     } finally {
@@ -65,56 +88,67 @@ const AddModule = () => {
   };
 
   return (
-    <Box maxW="md" mx="auto" mt={8} p={6} borderWidth={1} borderRadius="lg" boxShadow="lg">
-      <FormControl mb={4}>
-        <FormLabel>Module Name</FormLabel>
-        <Input name="name" value={moduleData.name} onChange={handleChange} placeholder="Enter module name" />
-      </FormControl>
-
-      <FormControl mb={4}>
-        <FormLabel>Description</FormLabel>
-        <Textarea
-          name="description"
-          value={moduleData.description}
-          onChange={handleChange}
-          placeholder="Enter module description"
-        />
-      </FormControl>
-
-      <FormControl mb={4}>
-        <FormLabel>Course ID</FormLabel>
-        <Input
-          name="courseId"
-          type="number"
-          value={moduleData.courseId}
-          onChange={handleChange}
-          placeholder="Enter related course ID"
-        />
-      </FormControl>
-
-      <FormControl mb={4}>
-        <FormLabel>Start Date</FormLabel>
-        <Input
-          name="startDate"
-          type="datetime-local"
-          value={moduleData.startDate}
-          onChange={handleChange}
-        />
-      </FormControl>
-
-      <FormControl mb={4}>
-        <FormLabel>End Date</FormLabel>
-        <Input
-          name="endDate"
-          type="datetime-local"
-          value={moduleData.endDate}
-          onChange={handleChange}
-        />
-      </FormControl>
-
-      <Button colorScheme="teal" isLoading={isLoading} onClick={handleSubmit}>
-        Add Module
-      </Button>
+    <Box p={5} maxW="600px" mx="auto" mt="20" bg="white" borderRadius="md" boxShadow="md">
+      <Heading as="h2" size="lg" mb={5} textAlign="center">
+        Add New Module
+      </Heading>
+      <VStack spacing={4}>
+        <FormControl id="name" isRequired>
+          <FormLabel>Name</FormLabel>
+          <Input
+            type="text"
+            name="name"
+            value={moduleData.name}
+            onChange={handleChange}
+            placeholder="Module Name"
+            bg="gray.50"
+          />
+        </FormControl>
+        <FormControl id="description" isRequired>
+          <FormLabel>Description</FormLabel>
+          <Textarea
+            name="description"
+            value={moduleData.description}
+            onChange={handleChange}
+            placeholder="Module Description"
+            bg="gray.50"
+          />
+        </FormControl>
+        <FormControl id="courseId" isRequired>
+          <FormLabel>Course ID</FormLabel>
+          <Input
+            type="number"
+            name="courseId"
+            value={moduleData.courseId}
+            onChange={handleChange}
+            placeholder="Course ID"
+            bg="gray.50"
+          />
+        </FormControl>
+        <FormControl id="startDate" isRequired>
+          <FormLabel>Start Date</FormLabel>
+          <Input
+            type="date"
+            name="startDate"
+            value={moduleData.startDate}
+            onChange={handleChange}
+            bg="gray.50"
+          />
+        </FormControl>
+        <FormControl id="endDate" isRequired>
+          <FormLabel>End Date</FormLabel>
+          <Input
+            type="date"
+            name="endDate"
+            value={moduleData.endDate}
+            onChange={handleChange}
+            bg="gray.50"
+          />
+        </FormControl>
+        <Button colorScheme="teal" isLoading={isLoading} onClick={handleSubmit} width="full">
+          Add Module
+        </Button>
+      </VStack>
     </Box>
   );
 };

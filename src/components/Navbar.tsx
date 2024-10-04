@@ -1,4 +1,17 @@
-import { Box, Flex, Heading, Spacer, Text, Avatar, Button } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  Spacer,
+  Text,
+  Avatar,
+  Button,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+} from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 
@@ -17,7 +30,15 @@ export const Navbar = () => {
   };
 
   const handleUsersClick = () => {
-    navigate("/dashboard/users");
+    navigate("/users");
+  };
+
+  const handleCreateCourseClick = () => {
+    navigate("/create/course");
+  };
+
+  const handleCreateModuleClick = () => {
+    navigate("/create/module");
   };
 
   return (
@@ -33,14 +54,31 @@ export const Navbar = () => {
             {user.userName}
           </Text>
           {user.role === "Teacher" && (
-            <Button
-              bg="yellow.400"
-              color="black"
-              _hover={{ bg: "yellow.500" }}
-              onClick={handleUsersClick}
-              mr={4}>
-              Handle Users
-            </Button>
+            <>
+              <Button
+                bg="yellow.400"
+                color="black"
+                _hover={{ bg: "yellow.500" }}
+                onClick={handleUsersClick}
+                mr={4}>
+                Handle Users
+              </Button>
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  rightIcon={<ChevronDownIcon />}
+                  bg="yellow.400"
+                  color="black"
+                  _hover={{ bg: "yellow.500" }}
+                  mr={4}>
+                  Create
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={handleCreateCourseClick}>Create Course</MenuItem>
+                  <MenuItem onClick={handleCreateModuleClick}>Create Module</MenuItem>
+                </MenuList>
+              </Menu>
+            </>
           )}
           <Button
             bg="yellow.400"

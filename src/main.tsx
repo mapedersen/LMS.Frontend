@@ -5,10 +5,11 @@ import { ChakraProvider } from "@chakra-ui/react";
 import App from "./App.tsx";
 import "./index.css";
 import { AuthProvider } from "./context/authContext.tsx";
+import theme from "./theme/theme.ts";
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <BrowserRouter>
         <AuthProvider>
           <App />
