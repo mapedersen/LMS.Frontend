@@ -1,4 +1,3 @@
-import { Navbar } from "../components";
 import StudentDashboard from "../components/StudentDashboard";
 import TeacherDashboard from "../components/TeacherDashboard";
 import { useAuth } from "../context/authContext";
@@ -23,7 +22,6 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar />
       <Box p={5}>
         <Heading mb={4}>Dashboard</Heading>
         <VStack spacing={4} align="start">
