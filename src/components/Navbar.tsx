@@ -26,10 +26,20 @@ const Navbar = () => {
           LMS
         </Heading>
         <Spacer />
-        <Link to="/dashboard/users">Users</Link>
-        <Link to="/create/course">Create Course</Link>
-        <Link to="/create/module">Create Module</Link>
-        <Button onClick={handleLogout}>Logout</Button>
+        <Flex gap={4}>
+          <Button as={Link} to="/create/course" colorScheme="whiteAlpha" variant="solid">
+            Create Course
+          </Button>
+          <Button as={Link} to="/dashboard/users" colorScheme="whiteAlpha" variant="solid">
+            Users
+          </Button>
+          {/* <Button as={Link} to="/create/module" colorScheme="whiteAlpha" variant="solid">
+            Create Module
+          </Button> */}
+          <Button onClick={handleLogout} colorScheme="red" variant="solid">
+            Logout
+          </Button>
+        </Flex>
       </Flex>
     </Box>
   );
