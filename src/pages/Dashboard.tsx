@@ -1,5 +1,5 @@
 import { Navbar } from "../components";
-import StudentDashboard from "../components/StudentDashBoard";
+import StudentDashboard from "../components/StudentDashboard";
 import TeacherDashboard from "../components/TeacherDashboard";
 import { useAuth } from "../context/authContext";
 import { Box, Text, Heading, VStack } from "@chakra-ui/react";
