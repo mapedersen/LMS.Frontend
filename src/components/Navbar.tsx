@@ -22,6 +22,10 @@ export const Navbar = () => {
     navigate("/");
   };
 
+  const handleRout = () => {
+    navigate("/dashboard/users");
+  };
+
   console.log("user", user?.role);
   return (
     <Box
@@ -39,7 +43,9 @@ export const Navbar = () => {
         <Spacer />
         <Flex gap={2}>
           {user.role === "Teacher" && (
-            <Button variant="outline">View All Students</Button>
+            <Button onClick={handleRout} variant="outline">
+              View Users
+            </Button>
           )}
           <Button onClick={handleLogout}>Logout</Button>
           <Menu>
