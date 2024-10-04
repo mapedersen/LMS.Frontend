@@ -1,46 +1,51 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea,
-  useToast,
   Heading,
   VStack,
+  useToast,
+  Select,
+  FormControl,
+  FormLabel,
 } from "@chakra-ui/react";
-
-interface Module {
-  name: string;
-  description: string;
-  courseId: number;
-  startDate: string;
-  endDate: string;
-}
+import FormField from "./ui/FormFields";
+import { useAuth } from "../context/authContext";
+import { ICourses } from "../types/course";
 
 const AddModule = () => {
-  const [moduleData, setModuleData] = useState<Module>({
-    name: "",
-    description: "",
-    courseId: 0,
-    startDate: "",
-    endDate: "",
-  });
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [courseId, setCourseId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const toast = useToast();
+  const { course } = useAuth() as { course: ICourses | null };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setModuleData({ ...moduleData, [name]: name === "courseId" ? parseInt(value) : value });
-  };
+  const courses = course?.courses || [];
 
-  const handleSubmit = async () => {
-    setIsLoading(true);
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const accessToken = localStorage.getItem("accessToken");
 
+    if (!accessToken) {
+      console.error("Access token is missing");
+      return;
+    }
+
+    const moduleData = {
+      name,
+      description,
+      startDate,
+      endDate,
+      courseId,
+    };
+
     try {
+      setIsLoading(true);
       const response = await fetch("https://localhost:7243/api/modules", {
         method: "POST",
         headers: {
@@ -58,13 +63,12 @@ const AddModule = () => {
           duration: 5000,
           isClosable: true,
         });
-        setModuleData({
-          name: "",
-          description: "",
-          courseId: 0,
-          startDate: "",
-          endDate: "",
-        });
+        setName("");
+        setDescription("");
+        setStartDate("");
+        setEndDate("");
+        setCourseId("");
+        navigate("/dashboard");
       } else {
         toast({
           title: "Error",
@@ -75,6 +79,7 @@ const AddModule = () => {
         });
       }
     } catch (error) {
+      console.error("Error creating module:", error);
       toast({
         title: "Error",
         description: "There was an error creating the module.",
@@ -89,63 +94,59 @@ const AddModule = () => {
 
   return (
     <Box p={5} maxW="600px" mx="auto" mt="20" bg="white" borderRadius="md" boxShadow="md">
-      <Heading as="h2" size="lg" mb={5} textAlign="center">
+      <Heading as="h2" size="lg" mb={5} textAlign="center" color="primary.600">
         Add New Module
       </Heading>
-      <VStack spacing={4}>
-        <FormControl id="name" isRequired>
-          <FormLabel>Name</FormLabel>
-          <Input
-            type="text"
-            name="name"
-            value={moduleData.name}
-            onChange={handleChange}
-            placeholder="Module Name"
-            bg="gray.50"
-          />
+      <VStack spacing={4} as="form" onSubmit={handleSubmit}>
+        <FormField
+          id="name"
+          label="Name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Module Name"
+          isRequired
+        />
+        <FormField
+          id="description"
+          label="Description"
+          type="textarea"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Module Description"
+          isRequired
+        />
+        <FormControl id="course" isRequired>
+          <FormLabel>Course</FormLabel>
+          <Select
+            placeholder="Select course"
+            value={courseId}
+            onChange={(e) => setCourseId(e.target.value)}>
+            {courses.map((course) => (
+              <option key={course.id} value={course.id}>
+                {course.name}
+              </option>
+            ))}
+          </Select>
         </FormControl>
-        <FormControl id="description" isRequired>
-          <FormLabel>Description</FormLabel>
-          <Textarea
-            name="description"
-            value={moduleData.description}
-            onChange={handleChange}
-            placeholder="Module Description"
-            bg="gray.50"
-          />
-        </FormControl>
-        <FormControl id="courseId" isRequired>
-          <FormLabel>Course ID</FormLabel>
-          <Input
-            type="number"
-            name="courseId"
-            value={moduleData.courseId}
-            onChange={handleChange}
-            placeholder="Course ID"
-            bg="gray.50"
-          />
-        </FormControl>
-        <FormControl id="startDate" isRequired>
-          <FormLabel>Start Date</FormLabel>
-          <Input
-            type="date"
-            name="startDate"
-            value={moduleData.startDate}
-            onChange={handleChange}
-            bg="gray.50"
-          />
-        </FormControl>
-        <FormControl id="endDate" isRequired>
-          <FormLabel>End Date</FormLabel>
-          <Input
-            type="date"
-            name="endDate"
-            value={moduleData.endDate}
-            onChange={handleChange}
-            bg="gray.50"
-          />
-        </FormControl>
-        <Button colorScheme="teal" isLoading={isLoading} onClick={handleSubmit} width="full">
+        <FormField
+          id="startDate"
+          label="Start Date"
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          isRequired
+        />
+        <FormField
+          id="endDate"
+          label="End Date"
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          isRequired
+        />
+
+        <Button colorScheme="primary" isLoading={isLoading} type="submit" width="full">
           Add Module
         </Button>
       </VStack>
