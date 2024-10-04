@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
-import { DecodedToken } from "../types/auth";
 import { useState } from "react";
 import { format } from "date-fns";
 
@@ -20,7 +19,7 @@ const CARD_WIDTH = "250px";
 const CARD_HEIGHT = "200px";
 
 const TeacherDashboard = () => {
-  const { user, course } = useAuth() as { user: DecodedToken; course: ICourses };
+  const { course } = useAuth() as { course: ICourses };
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
   const [showAllModules, setShowAllModules] = useState(false);
@@ -56,10 +55,6 @@ const TeacherDashboard = () => {
 
   return (
     <Box p={5} w="100%">
-      <Heading as="h2" mb={5}>
-        <Center>Welcome, {user?.role}</Center>
-      </Heading>
-
       {/* Courses grid */}
       <Box mb={8}>
         <Heading size="lg" mb={4}>
