@@ -8,7 +8,6 @@ import {
   Text,
   Button,
   Badge,
-  Flex,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
