@@ -1,15 +1,8 @@
-import { List, ListItem, Box, Text, Flex, Badge } from '@chakra-ui/react';
-import { IActivity } from './StudentDashBoard';
-
-interface IModule {
-  id: number;
-  name: string;
-  description: string;
-  startDate: string;
-  endDate: string;
-  courseId: number;
-  activities: IActivity[];
-}
+import { List, ListItem, Text } from "@chakra-ui/react";
+import { parseISO, isAfter } from "date-fns";
+import { useState } from "react";
+import { ExpiredModuleCard, ModuleCard, ToggleButton } from ".";
+import { IModule } from "../types/course";
 
 interface IModuleListProps {
   modules: IModule[];
@@ -17,57 +10,63 @@ interface IModuleListProps {
   selectedModule: IModule | null;
 }
 
-export const ModuleList = ({
-  modules,
-  handleModuleClick,
-  selectedModule,
-}: IModuleListProps) => {
+export const ModuleList = ({ modules, handleModuleClick, selectedModule }: IModuleListProps) => {
+  const [showAllActive, setShowAllActive] = useState(false);
+  const [viewActiveModules, setViewActiveModules] = useState(true);
+  const today = new Date();
+
+  const activeModules = modules.filter((module) => isAfter(parseISO(module.endDate), today));
+
+  const expiredModules = modules.filter((module) => !isAfter(parseISO(module.endDate), today));
+
+  const activeModulesToShow = showAllActive ? activeModules : activeModules.slice(0, 3);
+
+  const hiddenActiveModulesCount = activeModules.length - activeModulesToShow.length;
+
   if (!modules || modules.length === 0) {
     return <Text>No modules available</Text>;
   }
 
   return (
-    <List spacing={4}>
-      {modules.map((module) => (
-        <ListItem
-          key={module.id}
-          onClick={() => handleModuleClick(module)}
-          cursor='pointer'
-        >
-          <Box
-            p={4}
-            borderWidth='1px'
-            borderRadius='lg'
-            bg={selectedModule?.id === module.id ? 'blue.50' : 'white'}
-            _hover={{
-              backgroundColor: 'gray.100',
-            }}
-          >
-            <Flex justifyContent='space-between' alignItems='center'>
-              <Text fontSize='lg'>{module.name}</Text>{' '}
-              {/* Ingen ändring till bold */}
-              <Badge colorScheme='blue'>
-                {module.activities.length} Activities
-              </Badge>
-            </Flex>
-            <Text fontSize='sm' color='gray.500'>
-              {module.description}
-            </Text>
-            <Text fontSize='sm' mt={2}>
-              <Text as='span' fontWeight='bold'>
-                Start Date:
-              </Text>{' '}
-              {module.startDate}
-            </Text>
-            <Text fontSize='sm'>
-              <Text as='span' fontWeight='bold'>
-                End Date:
-              </Text>{' '}
-              {module.endDate}
-            </Text>
-          </Box>
-        </ListItem>
-      ))}
-    </List>
+    <>
+      <ToggleButton
+        isToggled={viewActiveModules}
+        onToggle={() => setViewActiveModules(!viewActiveModules)}
+        activeLabel="Show Expired Modules"
+        inactiveLabel="Show Active Modules"
+      />
+      {viewActiveModules ? (
+        <>
+          <List spacing={4} my={4}>
+            {activeModulesToShow.map((module) => (
+              <ListItem key={module.id} onClick={() => handleModuleClick(module)} cursor="pointer">
+                <ModuleCard module={module} isSelected={selectedModule?.id === module.id} />
+              </ListItem>
+            ))}
+          </List>
+          {activeModules.length > 3 && (
+            <ToggleButton
+              isToggled={showAllActive}
+              onToggle={() => setShowAllActive(!showAllActive)}
+              activeLabel="Show fewer modules"
+              inactiveLabel={`Show ${hiddenActiveModulesCount} more active module${
+                hiddenActiveModulesCount > 1 ? "s" : ""
+              }`}
+            />
+          )}
+        </>
+      ) : (
+        <List spacing={4} mt={4}>
+          {expiredModules.map((module) => (
+            <ListItem
+              key={module.id}
+              onClick={() => handleModuleClick(module)}
+              cursor="not-allowed">
+              <ExpiredModuleCard key={module.id} module={module} />
+            </ListItem>
+          ))}
+        </List>
+      )}
+    </>
   );
 };

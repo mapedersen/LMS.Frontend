@@ -1,5 +1,5 @@
 import { jwtDecode } from "jwt-decode";
-import { CourseDetails } from "../types/course";
+import { ICourse, ICourses } from "../types/course";
 import { refreshAccessToken } from "./authService";
 
 // Check if the token is expired
@@ -15,7 +15,7 @@ const checkIfTokenExpired = (accessToken: string) => {
 export const fetchCourseDetails = async (
   accessToken: string,
   userRole: string
-): Promise<CourseDetails[]> => {
+): Promise<ICourse | ICourses> => {
   // Check if token has expired
   if (checkIfTokenExpired(accessToken)) {
     const { accessToken: newAccessToken } = await refreshAccessToken();
@@ -35,12 +35,67 @@ export const fetchCourseDetails = async (
     method: "GET",
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "content-Type": "application/json",
+      "Content-Type": "application/json",
     },
   });
 
   if (!response.ok) {
     throw new Error("Failed to fetch course details");
   }
+  return response.json();
+};
+
+export const fetchStudentsForCourse = async (
+  accessToken: string,
+  courseId: number
+): Promise<any[]> => {
+  if (checkIfTokenExpired(accessToken)) {
+    const { accessToken: newAccessToken } = await refreshAccessToken();
+    if (newAccessToken) {
+      accessToken = newAccessToken;
+    } else {
+      throw new Error("Failed to refresh access token, please log in again.");
+    }
+  }
+
+  const url = `https://localhost:7243/api/courses/${courseId}/students`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch students for course");
+  }
+
+  return response.json();
+};
+
+export const createCourse = async (
+  accessToken: string,
+  course: { name: string; description: string; startDate: string }
+) => {
+  if (checkIfTokenExpired(accessToken)) {
+    const { accessToken: newAccessToken } = await refreshAccessToken();
+    accessToken = newAccessToken || accessToken;
+  }
+
+  const response = await fetch("https://localhost:7243/api/courses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(course),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create the course");
+  }
+
   return response.json();
 };
