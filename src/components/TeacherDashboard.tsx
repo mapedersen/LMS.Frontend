@@ -10,6 +10,7 @@ import {
   Badge,
   IconButton,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/authContext";
@@ -116,15 +117,17 @@ const TeacherDashboard = () => {
               position="relative"
               bg={selectedCourse?.id === course.id ? "teal.100" : "white"}>
               <CardHeader>
-                <Heading size="md">{course.name}</Heading>
-                <Text fontSize="sm" color="gray.500">
-                  Start Date: {format(new Date(course.startDate), "MMMM dd, yyyy")}
-                </Text>
+                <VStack align="start" spacing={2}>
+                  <Heading size="md">{course.name}</Heading>
+                  <Text fontSize="sm" color="gray.500">
+                    Start Date: {format(new Date(course.startDate), "MMMM dd, yyyy")}
+                  </Text>
+                  <Text noOfLines={2} overflow="hidden" textOverflow="ellipsis">
+                    {course.description}
+                  </Text>
+                </VStack>
               </CardHeader>
               <Box p={4} flex="1" overflow="hidden">
-                <Text mb={2} noOfLines={2} overflow="hidden" textOverflow="ellipsis">
-                  {course.description}
-                </Text>
                 <Box position="absolute" bottom="4" left="4">
                   <Badge colorScheme="teal">{course.modules.length} Modules</Badge>
                 </Box>
@@ -140,7 +143,7 @@ const TeacherDashboard = () => {
                   }}
                   mr={2}
                 />
-                <IconButton
+                {/* <IconButton
                   aria-label="Delete Course"
                   icon={<DeleteIcon />}
                   size="sm"
@@ -148,7 +151,7 @@ const TeacherDashboard = () => {
                     e.stopPropagation();
                     handleDeleteCourse(course);
                   }}
-                />
+                /> */}
               </Box>
             </Card>
           ))}
