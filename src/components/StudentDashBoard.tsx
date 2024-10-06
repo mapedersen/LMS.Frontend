@@ -36,6 +36,7 @@ const StudentDashboard = () => {
           if (accessToken) {
             const students = await fetchStudentsForCourse(accessToken, course.id);
             setStudentsForCourse(students);
+            console.log(students);
           } else {
             console.error("No access token available.");
           }
@@ -134,8 +135,8 @@ const StudentDashboard = () => {
                           Fellow Students
                         </Heading>
                         <SimpleGrid columns={3} spacing={4}>
-                          {studentsForCourse.map((student: IUser) => (
-                            <Flex key={student.id} alignItems="center">
+                          {studentsForCourse.map((student: IUser, index) => (
+                            <Flex key={index} alignItems="center">
                               <Avatar name={student.firstName} mr={2} />
                               <Text>{student.firstName}</Text>
                             </Flex>
