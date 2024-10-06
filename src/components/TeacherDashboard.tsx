@@ -9,6 +9,7 @@ import {
   Button,
   Badge,
   IconButton,
+  useToast,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/authContext";
@@ -27,6 +28,7 @@ const TeacherDashboard = () => {
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
   const [showAllModules, setShowAllModules] = useState(false);
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
+  const toast = useToast();
 
   if (!course) return <p>No Course</p>;
 
