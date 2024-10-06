@@ -120,7 +120,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, course, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, course, setCourse, login, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 

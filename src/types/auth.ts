@@ -24,6 +24,7 @@ export interface UserState {
 export interface AuthContextType {
   user: DecodedToken | null;
   course: ICourse | ICourses | null;
+  setCourse: (course: ICourse | ICourses | null) => void;
   login: (credentials: AuthCredentials) => Promise<void>;
   logout: () => void;
 }

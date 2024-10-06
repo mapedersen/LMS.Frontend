@@ -100,7 +100,7 @@ const StudentDashboard = () => {
             {/* Course details */}
             <Box flex="1">
               {course && (
-                <Box mb={8}>
+                <Box mb={8} p={15}>
                   <Card
                     mx="auto"
                     minWidth="800px"
@@ -129,7 +129,7 @@ const StudentDashboard = () => {
                     </Box>
                     {/* Fellow Students */}
                     {studentsForCourse.length > 0 && (
-                      <Box mt={4}>
+                      <Box p={15}>
                         <Heading size="sm" mb={2}>
                           Fellow Students
                         </Heading>
@@ -149,7 +149,7 @@ const StudentDashboard = () => {
 
               {/* Activities grid */}
               {selectedModule && (
-                <Box mb={8}>
+                <Box mb={8} p="15px">
                   <Heading size="lg" mb={4}>
                     Activities for {selectedModule.name}
                   </Heading>

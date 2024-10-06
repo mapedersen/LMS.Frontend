@@ -3,14 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button, Heading, VStack, useToast } from "@chakra-ui/react";
 import FormField from "./ui/FormFields";
 import { refreshAccessToken } from "../services/authService";
+import { fetchCourseDetails } from "../services/courseService";
+import { useAuth } from "../context/authContext";
 
 const AddCourse = () => {
+  const { setCourse, user } = useAuth();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
+  const accessToken = localStorage.getItem("accessToken");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +57,13 @@ const AddCourse = () => {
       });
 
       if (response.ok) {
+        if (user) {
+          if (accessToken) {
+            const courses = await fetchCourseDetails(accessToken, user.role);
+            console.log(courses);
+            setCourse(courses);
+          }
+        }
         const course = await response.json();
         toast({
           title: "Course created.",
@@ -64,6 +75,7 @@ const AddCourse = () => {
         setName("");
         setDescription("");
         setStartDate("");
+
         navigate(`/dashboard/add-module/${course.id}`);
       } else {
         toast({

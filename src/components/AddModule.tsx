@@ -1,24 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Heading,
-  VStack,
-  useToast,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Heading, VStack, useToast, Text } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
-import FormField from "./ui/FormFields";
+import FormFields from "./ui/FormFields";
 import { ICourse } from "../types/course";
 import { refreshAccessToken } from "../services/authService";
+import FormField from "./ui/FormFields";
 
 const AddModule = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -30,8 +16,6 @@ const AddModule = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [newModuleId, setNewModuleId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCourse = async (pageNumber = 1) => {
@@ -39,7 +23,6 @@ const AddModule = () => {
 
       if (!accessToken) {
         console.error("Access token is missing. Attempting to refresh token...");
-        // Assuming you have a function to refresh the token
         const newAccessToken = await refreshAccessToken();
         if (!newAccessToken) {
           toast({
@@ -86,7 +69,7 @@ const AddModule = () => {
       }
     };
     fetchCourse();
-  }, [courseId]);
+  }, [courseId, navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +77,24 @@ const AddModule = () => {
     const accessToken = localStorage.getItem("accessToken");
 
     if (!accessToken) {
-      console.error("Access token is missing");
+      toast({
+        title: "Error",
+        description: "No access token available.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (thisCourse && new Date(startDate) < new Date(thisCourse.startDate)) {
+      toast({
+        title: "Error",
+        description: "Start date cannot be before the course start date.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       return;
     }
 
@@ -119,12 +119,18 @@ const AddModule = () => {
 
       if (response.ok) {
         const module = await response.json();
-        setNewModuleId(module.id);
+        toast({
+          title: "Module created.",
+          description: "The module has been created successfully.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
         setName("");
         setDescription("");
         setStartDate("");
         setEndDate("");
-        onOpen(); // Open the modal
+        navigate(`/dashboard/add-activity/${module.id}`); // Navigate to AddActivity with the new module ID
       } else {
         toast({
           title: "Error",
@@ -147,14 +153,6 @@ const AddModule = () => {
     }
   };
 
-  const handleAddAnotherModule = () => {
-    onClose();
-  };
-
-  const handleAddActivity = () => {
-    navigate(`/dashboard/add-activity/${newModuleId}`);
-  };
-
   return (
     <Box p={5} maxW="600px" mx="auto" mt="20" bg="white" borderRadius="md" boxShadow="md">
       {thisCourse && (
@@ -163,6 +161,7 @@ const AddModule = () => {
             Course: {thisCourse.name}
           </Text>
           <Text>Description: {thisCourse.description}</Text>
+          <Text>Start Date: {new Date(thisCourse.startDate).toLocaleDateString("en-CA")}</Text>
         </Box>
       )}
       <Heading as="h2" size="lg" mb={5} textAlign="center" color="primary.600">
@@ -192,7 +191,10 @@ const AddModule = () => {
           label="Start Date"
           type="date"
           value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
+          onChange={(e) => {
+            setStartDate(e.target.value);
+            console.log(e.target.value);
+          }}
           isRequired
         />
         <FormField
@@ -208,7 +210,7 @@ const AddModule = () => {
         </Button>
       </VStack>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      {/* <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Module Created</ModalHeader>
@@ -225,7 +227,7 @@ const AddModule = () => {
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>
+      </Modal> */}
     </Box>
   );
 };

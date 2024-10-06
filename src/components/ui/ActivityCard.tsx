@@ -26,8 +26,8 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
           Due Date: {format(new Date(activity.endDate), "MMMM dd, yyyy")}
         </Text>
       </CardHeader>
-      <Box p={4} flex="1" overflow="hidden">
-        <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
+      <Box p={4} flex="1" overflow="hidden" pt="0px">
+        <Text noOfLines={2} overflow="hidden" textOverflow="ellipsis">
           {activity.description}
         </Text>
       </Box>
