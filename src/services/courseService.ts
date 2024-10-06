@@ -28,8 +28,8 @@ export const fetchCourseDetails = async (
 
   const url =
     userRole === "Student"
-      ? "https://localhost:7243/api/courses/student"
-      : "https://localhost:7243/api/courses";
+      ? "http://localhost:5058/api/courses/student"
+      : "http://localhost:5058/api/courses";
 
   const response = await fetch(url, {
     method: "GET",
@@ -58,7 +58,7 @@ export const fetchStudentsForCourse = async (
     }
   }
 
-  const url = `https://localhost:7243/api/courses/${courseId}/students`;
+  const url = `http://localhost:5058/api/courses/${courseId}/students`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -84,7 +84,7 @@ export const createCourse = async (
     accessToken = newAccessToken || accessToken;
   }
 
-  const response = await fetch("https://localhost:7243/api/courses", {
+  const response = await fetch("http://localhost:5058/api/courses", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,

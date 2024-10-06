@@ -7,7 +7,7 @@ import { fetchAllUsers } from "../services/userService";
 
 export const UsersPage = () => {
   const [users, setUsers] = useState<IUser[]>([]);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const accessToken = localStorage.getItem("accessToken");
 

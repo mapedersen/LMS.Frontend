@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Box, Button, FormControl, FormLabel, Input, Textarea, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Textarea,
+  useToast,
+} from "@chakra-ui/react";
 
 interface Module {
   name: string;
@@ -15,14 +23,19 @@ const AddModule = () => {
     description: "",
     courseId: 0,
     startDate: "",
-    endDate: ""
+    endDate: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setModuleData({ ...moduleData, [name]: name === "courseId" ? parseInt(value) : value });
+    setModuleData({
+      ...moduleData,
+      [name]: name === "courseId" ? parseInt(value) : value,
+    });
   };
 
   const handleSubmit = async () => {
@@ -31,7 +44,7 @@ const AddModule = () => {
     const accessToken = localStorage.getItem("accessToken");
 
     try {
-      const response = await fetch("https://localhost:7243/api/modules", {
+      const response = await fetch("http://localhost:5058/api/modules", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -47,7 +60,13 @@ const AddModule = () => {
           duration: 3000,
           isClosable: true,
         });
-        setModuleData({ name: "", description: "", courseId: 0, startDate: "", endDate: "" });
+        setModuleData({
+          name: "",
+          description: "",
+          courseId: 0,
+          startDate: "",
+          endDate: "",
+        });
       } else {
         throw new Error("Failed to add module");
       }
@@ -65,10 +84,23 @@ const AddModule = () => {
   };
 
   return (
-    <Box maxW="md" mx="auto" mt={8} p={6} borderWidth={1} borderRadius="lg" boxShadow="lg">
+    <Box
+      maxW="md"
+      mx="auto"
+      mt={8}
+      p={6}
+      borderWidth={1}
+      borderRadius="lg"
+      boxShadow="lg"
+    >
       <FormControl mb={4}>
         <FormLabel>Module Name</FormLabel>
-        <Input name="name" value={moduleData.name} onChange={handleChange} placeholder="Enter module name" />
+        <Input
+          name="name"
+          value={moduleData.name}
+          onChange={handleChange}
+          placeholder="Enter module name"
+        />
       </FormControl>
 
       <FormControl mb={4}>
