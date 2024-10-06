@@ -9,8 +9,8 @@ import {
   Button,
   Badge,
   IconButton,
-  useToast,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useAuth } from "../context/authContext";
@@ -21,7 +21,7 @@ import { deleteCourse } from "../services/courseService";
 
 const MAX_ITEMS = 5;
 const CARD_WIDTH = "250px";
-const CARD_HEIGHT = "200px";
+const CARD_HEIGHT = "auto"; // Set to auto to adjust based on content
 
 const TeacherDashboard = () => {
   const { course } = useAuth() as { course: ICourses };
@@ -60,8 +60,9 @@ const TeacherDashboard = () => {
   };
 
   const handleEditCourse = (course: ICourse) => {
-    // Handle course edit logic here
-    console.log("Edit course:", course);
+    setEditCourseData(course);
+    setIsEditModalOpen(true);
+    onOpen();
   };
 
   const handleDeleteCourse = async (course: ICourse) => {
@@ -107,7 +108,6 @@ const TeacherDashboard = () => {
               onClick={() => handleCourseClick(course)}
               _hover={{ boxShadow: "2xl" }}
               width={CARD_WIDTH}
-              height={CARD_HEIGHT}
               borderWidth="1px"
               borderRadius="lg"
               overflow="hidden"
@@ -133,7 +133,7 @@ const TeacherDashboard = () => {
                 </Box>
               </Box>
               <Box position="absolute" top="2" right="2">
-                <IconButton
+                {/* <IconButton
                   aria-label="Edit Course"
                   icon={<EditIcon />}
                   size="sm"
@@ -142,7 +142,7 @@ const TeacherDashboard = () => {
                     handleEditCourse(course);
                   }}
                   mr={2}
-                />
+                /> */}
                 {/* <IconButton
                   aria-label="Delete Course"
                   icon={<DeleteIcon />}
@@ -179,7 +179,6 @@ const TeacherDashboard = () => {
                 onClick={() => handleModuleClick(module)}
                 _hover={{ boxShadow: "2xl" }}
                 width={CARD_WIDTH}
-                height={CARD_HEIGHT}
                 borderWidth="1px"
                 borderRadius="lg"
                 overflow="hidden"
@@ -189,10 +188,18 @@ const TeacherDashboard = () => {
                 position="relative"
                 bg={selectedModule?.id === module.id ? "teal.100" : "white"}>
                 <CardHeader>
-                  <Heading size="md">{module.name}</Heading>
+                  <VStack align="start" spacing={1}>
+                    <Heading size="md">{module.name}</Heading>
+                    <Text fontSize="sm" color="gray.500">
+                      Start Date: {format(new Date(module.startDate), "MMMM dd, yyyy")}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      End Date: {format(new Date(module.endDate), "MMMM dd, yyyy")}
+                    </Text>
+                  </VStack>
                 </CardHeader>
-                <Box p={4} flex="1" overflow="hidden">
-                  <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
+                <Box p={4} pt={0} mb={2} flex="1" overflow="hidden">
+                  <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis" mb={6}>
                     {module.description}
                   </Text>
                   <Box position="absolute" bottom="4" left="4">
@@ -224,7 +231,6 @@ const TeacherDashboard = () => {
                 key={activity.id}
                 _hover={{ boxShadow: "2xl" }}
                 width={CARD_WIDTH}
-                height={CARD_HEIGHT}
                 borderWidth="1px"
                 borderRadius="lg"
                 overflow="hidden"
@@ -233,9 +239,14 @@ const TeacherDashboard = () => {
                 justifyContent="space-between"
                 position="relative">
                 <CardHeader>
-                  <Heading size="md">{activity.name}</Heading>
+                  <VStack align="start" spacing={1}>
+                    <Heading size="md">{activity.name}</Heading>
+                    <Text fontSize="sm" color="gray.500">
+                      Due Date: {format(new Date(activity.endDate), "MMMM dd, yyyy")}
+                    </Text>
+                  </VStack>
                 </CardHeader>
-                <Box p={4} flex="1" overflow="hidden">
+                <Box p={4} pt={0} flex="1" overflow="hidden">
                   <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
                     {activity.description}
                   </Text>
