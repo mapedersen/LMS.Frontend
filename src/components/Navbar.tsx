@@ -1,3 +1,4 @@
+import React from "react";
 import { Box, Flex, Heading, Spacer, Button } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
@@ -5,9 +6,8 @@ import { useAuth } from "../context/authContext";
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  if (!user) return null;
 
-  console.log(user);
+  if (!user) return null;
 
   const handleLogout = () => {
     logout();
@@ -27,15 +27,16 @@ const Navbar = () => {
         </Heading>
         <Spacer />
         <Flex gap={4}>
-          <Button as={Link} to="/dashboard/add-course" colorScheme="whiteAlpha" variant="solid">
-            Create Course
-          </Button>
-          <Button as={Link} to="/dashboard/users" colorScheme="whiteAlpha" variant="solid">
-            Users
-          </Button>
-          {/* <Button as={Link} to="/create/module" colorScheme="whiteAlpha" variant="solid">
-            Create Module
-          </Button> */}
+          {user.role === "Teacher" && (
+            <>
+              <Button as={Link} to="/dashboard/add-course" colorScheme="whiteAlpha" variant="solid">
+                Add Course
+              </Button>
+              {/* <Button as={Link} to="/dashboard/users" colorScheme="whiteAlpha" variant="solid">
+                Users
+              </Button> */}
+            </>
+          )}
           <Button onClick={handleLogout} colorScheme="red" variant="solid">
             Logout
           </Button>
