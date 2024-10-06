@@ -5,6 +5,8 @@ import FormFields from "./ui/FormFields";
 import { ICourse } from "../types/course";
 import { refreshAccessToken } from "../services/authService";
 import FormField from "./ui/FormFields";
+import { fetchCourseDetails } from "../services/courseService";
+import { useAuth } from "../context/authContext";
 
 const AddModule = () => {
   const { courseId } = useParams<{ courseId: string }>();
@@ -16,6 +18,7 @@ const AddModule = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
+  const { user, setCourse } = useAuth();
 
   useEffect(() => {
     const fetchCourse = async (pageNumber = 1) => {
@@ -118,6 +121,13 @@ const AddModule = () => {
       });
 
       if (response.ok) {
+        if (user) {
+          if (accessToken) {
+            const courses = await fetchCourseDetails(accessToken, user.role);
+            console.log(courses);
+            setCourse(courses);
+          }
+        }
         const module = await response.json();
         toast({
           title: "Module created.",
