@@ -1,4 +1,4 @@
-import StudentDashboard from "../components/StudentDashBoard";
+import StudentDashboard from "../components/StudentDashboard";
 import TeacherDashboard from "../components/TeacherDashboard";
 import { useAuth } from "../context/authContext";
 import { Box, Text, Heading, VStack } from "@chakra-ui/react";
@@ -15,13 +15,9 @@ const DashboardPage = () => {
   }
 
   return (
-    <Box p={5}>
-      <Heading mb={4}>Dashboard</Heading>
-      <VStack spacing={4} align="start">
-        {user.role === "Teacher" && <TeacherDashboard />}
-        {user.role === "Student" && <StudentDashboard />}
-        {/* Additional role checks as necessary */}
-      </VStack>
+    <Box mt={20}>
+      {user.role === "Teacher" && <TeacherDashboard />}
+      {user.role === "Student" && <StudentDashboard />}
     </Box>
   );
 };

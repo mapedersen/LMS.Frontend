@@ -4,13 +4,14 @@ import {
   Heading,
   SimpleGrid,
   Center,
+  Flex,
+  Avatar,
+  Button,
+  VStack,
   Card,
   CardHeader,
   Text,
   Badge,
-  Flex,
-  Avatar,
-  Button,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { fetchStudentsForCourse } from "../services/courseService";
@@ -18,9 +19,8 @@ import { IUser } from "../types/user";
 import { IActivity, ICourse, IModule } from "../types/course";
 import { format, isPast } from "date-fns";
 import { DecodedToken } from "../types/auth";
-
-const CARD_WIDTH = "250px";
-const CARD_HEIGHT = "200px";
+import ModulesCard from "./ui/ModuleCard"; // Ensure correct import path
+import ActivityCard from "./ui/ActivityCard"; // Ensure correct import path
 
 const StudentDashboard = () => {
   const { user, course } = useAuth() as { user: DecodedToken; course: ICourse };
@@ -63,139 +63,105 @@ const StudentDashboard = () => {
 
   return (
     <Center>
-      <Box p={5} w="90%" maxW="1200px" mx="auto" mt="5">
-        <Flex direction="row" alignItems="flex-start">
-          {/* Modules list */}
-          <Box width="20%" mr={8}>
-            <Heading size="lg" mb={4}>
-              Modules
-            </Heading>
-            <Button colorScheme="teal" onClick={() => setShowPastModules(!showPastModules)} mb={4}>
-              {showPastModules ? "Show Active Modules" : "Show Past Modules"}
-            </Button>
-            <SimpleGrid columns={1} spacing={4}>
-              {filteredModules.map((module: IModule) => (
-                <Card
-                  key={module.id}
-                  cursor="pointer"
-                  onClick={() => handleModuleClick(module)}
-                  _hover={{ boxShadow: "2xl" }}
-                  width="100%"
-                  borderWidth="1px"
-                  borderRadius="lg"
-                  overflow="hidden"
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="space-between"
-                  position="relative"
-                  bg={selectedModule?.id === module.id ? "teal.100" : "white"}>
-                  <CardHeader>
-                    <Heading size="md">{module.name}</Heading>
-                    <Text fontSize="sm" color="gray.500">
-                      {format(new Date(module.startDate), "MMMM dd, yyyy")} -{" "}
-                      {format(new Date(module.endDate), "MMMM dd, yyyy")}
-                    </Text>
-                  </CardHeader>
-                  <Box p={4} flex="1" overflow="hidden">
-                    <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
-                      {module.description}
-                    </Text>
-                    <Box position="absolute" bottom="4" left="4">
-                      <Badge colorScheme="teal">{module.activities.length} Activities</Badge>
-                    </Box>
-                  </Box>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </Box>
+      <Box
+        p={5}
+        w="90%"
+        maxW="1200px"
+        mx="auto"
+        mt="5"
+        display="flex"
+        justifyContent="center"
+        alignItems="center">
+        <Flex direction="column" alignItems="center">
+          <Flex direction="row" width="100%" justifyContent="space-between">
+            {/* Modules list */}
+            <Box mr={8}>
+              <Heading size="lg" mb={4}>
+                Modules
+              </Heading>
+              <Button
+                colorScheme="teal"
+                onClick={() => setShowPastModules(!showPastModules)}
+                mb={4}>
+                {showPastModules ? "Show Active Modules" : "Show Past Modules"}
+              </Button>
+              <VStack spacing={4}>
+                {filteredModules.map((module: IModule) => (
+                  <ModulesCard
+                    key={module.id}
+                    module={module}
+                    selectedModule={selectedModule}
+                    onClick={handleModuleClick}
+                  />
+                ))}
+              </VStack>
+            </Box>
 
-          {/* Course details */}
-
-          <Box flex="1">
-            {course && (
-              <Box mb={8}>
-                <Card
-                  mx="auto"
-                  borderWidth="2px"
-                  borderRadius="lg"
-                  overflow="hidden"
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="space-between"
-                  position="relative"
-                  bg="teal.50"
-                  p={5}>
-                  <CardHeader display="flex" justifyContent="space-between" alignItems="center">
-                    <Box>
-                      <Heading size="md">{course.name}</Heading>
-                      <Text fontSize="sm" color="gray.500">
-                        Start Date: {format(new Date(course.startDate), "MMMM dd, yyyy")}
-                      </Text>
-                    </Box>
-                    <Badge colorScheme="teal">{course.modules.length} Modules</Badge>
-                  </CardHeader>
-                  <Box p={4} flex="1" overflow="hidden">
-                    <Text mb={2} noOfLines={3} overflow="hidden" textOverflow="ellipsis">
-                      {course.description}
-                    </Text>
-                  </Box>
-                  {/* Fellow Students */}
-                  {studentsForCourse.length > 0 && (
-                    <Box mt={4}>
-                      <Heading size="sm" mb={2}>
-                        Fellow Students
-                      </Heading>
-                      <SimpleGrid columns={3} spacing={4}>
-                        {studentsForCourse.map((student: IUser) => (
-                          <Flex key={student.id} alignItems="center">
-                            <Avatar name={student.firstName} mr={2} />
-                            <Text>{student.firstName}</Text>
-                          </Flex>
-                        ))}
-                      </SimpleGrid>
-                    </Box>
-                  )}
-                </Card>
-              </Box>
-            )}
-
-            {/* Activities grid */}
-            {selectedModule && (
-              <Box mb={8}>
-                <Heading size="lg" mb={4}>
-                  Activities for {selectedModule.name}
-                </Heading>
-                <SimpleGrid columns={3} spacing={6}>
-                  {selectedModule.activities.map((activity: IActivity) => (
-                    <Card
-                      key={activity.id}
-                      _hover={{ boxShadow: "2xl" }}
-                      width={CARD_WIDTH}
-                      height={CARD_HEIGHT}
-                      borderWidth="1px"
-                      borderRadius="lg"
-                      overflow="hidden"
-                      display="flex"
-                      flexDirection="column"
-                      justifyContent="space-between"
-                      position="relative">
-                      <CardHeader>
-                        <Heading size="md">{activity.name}</Heading>
+            {/* Course details */}
+            <Box flex="1">
+              {course && (
+                <Box mb={8}>
+                  <Card
+                    mx="auto"
+                    minWidth="800px"
+                    borderWidth="2px"
+                    borderRadius="lg"
+                    overflow="hidden"
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="space-between"
+                    position="relative"
+                    bg="teal.50"
+                    p={5}>
+                    <CardHeader display="flex" justifyContent="space-between" alignItems="center">
+                      <Box>
+                        <Heading size="md">{course.name}</Heading>
                         <Text fontSize="sm" color="gray.500">
-                          Due Date: {format(new Date(activity.endDate), "MMMM dd, yyyy")}
-                        </Text>
-                      </CardHeader>
-                      <Box p={4} flex="1" overflow="hidden">
-                        <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
-                          {activity.description}
+                          Start Date: {format(new Date(course.startDate), "MMMM dd, yyyy")}
                         </Text>
                       </Box>
-                    </Card>
-                  ))}
-                </SimpleGrid>
-              </Box>
-            )}
-          </Box>
+                      <Badge colorScheme="teal">{course.modules.length} Modules</Badge>
+                    </CardHeader>
+                    <Box p={4} flex="1" overflow="hidden">
+                      <Text mb={2} noOfLines={3} overflow="hidden" textOverflow="ellipsis">
+                        {course.description}
+                      </Text>
+                    </Box>
+                    {/* Fellow Students */}
+                    {studentsForCourse.length > 0 && (
+                      <Box mt={4}>
+                        <Heading size="sm" mb={2}>
+                          Fellow Students
+                        </Heading>
+                        <SimpleGrid columns={3} spacing={4}>
+                          {studentsForCourse.map((student: IUser) => (
+                            <Flex key={student.id} alignItems="center">
+                              <Avatar name={student.firstName} mr={2} />
+                              <Text>{student.firstName}</Text>
+                            </Flex>
+                          ))}
+                        </SimpleGrid>
+                      </Box>
+                    )}
+                  </Card>
+                </Box>
+              )}
+
+              {/* Activities grid */}
+              {selectedModule && (
+                <Box mb={8}>
+                  <Heading size="lg" mb={4}>
+                    Activities for {selectedModule.name}
+                  </Heading>
+                  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+                    {selectedModule.activities.map((activity: IActivity) => (
+                      <ActivityCard key={activity.id} activity={activity} />
+                    ))}
+                  </SimpleGrid>
+                </Box>
+              )}
+            </Box>
+          </Flex>
         </Flex>
       </Box>
     </Center>
