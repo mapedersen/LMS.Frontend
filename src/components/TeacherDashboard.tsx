@@ -1,27 +1,14 @@
-import {
-  Box,
-  Heading,
-  SimpleGrid,
-  Center,
-  Card,
-  CardHeader,
-  Text,
-  Button,
-  Badge,
-  IconButton,
-  VStack,
-  useToast,
-} from "@chakra-ui/react";
-import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import { useState } from "react";
+import { Box, Heading, SimpleGrid, Center, Button, useToast } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
-import { useState } from "react";
 import { format } from "date-fns";
-import { deleteCourse } from "../services/courseService";
+import ModulesCard from "./ui/ModuleCard"; // Import ModulesCard component
+import CourseCard from "./ui/CourseCard"; // Import CourseCard component
+import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
 
 const MAX_ITEMS = 5;
 const CARD_WIDTH = "250px";
-const CARD_HEIGHT = "auto"; // Set to auto to adjust based on content
 
 const TeacherDashboard = () => {
   const { course } = useAuth() as { course: ICourses };
@@ -59,40 +46,6 @@ const TeacherDashboard = () => {
     }
   };
 
-  const handleEditCourse = (course: ICourse) => {
-    setEditCourseData(course);
-    setIsEditModalOpen(true);
-    onOpen();
-  };
-
-  const handleDeleteCourse = async (course: ICourse) => {
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken) {
-      console.error("Access token is missing");
-      return;
-    }
-    try {
-      await deleteCourse(accessToken, course.id.toString());
-      toast({
-        title: "Course deleted.",
-        description: `Course ${course.name} has been deleted successfully.`,
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-      // Optionally, refresh the course list or remove the deleted course from the state
-    } catch (error) {
-      toast({
-        title: "Error deleting course.",
-        description: `Failed to delete course ${course.name}.`,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
   return (
     <Box p={5} w="100%">
       {/* Courses grid */}
@@ -102,58 +55,12 @@ const TeacherDashboard = () => {
         </Heading>
         <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
           {courseList.map((course: ICourse) => (
-            <Card
+            <CourseCard
               key={course.id}
-              cursor="pointer"
-              onClick={() => handleCourseClick(course)}
-              _hover={{ boxShadow: "2xl" }}
-              width={CARD_WIDTH}
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              display="flex"
-              flexDirection="column"
-              justifyContent="space-between"
-              position="relative"
-              bg={selectedCourse?.id === course.id ? "teal.100" : "white"}>
-              <CardHeader>
-                <VStack align="start" spacing={2}>
-                  <Heading size="md">{course.name}</Heading>
-                  <Text fontSize="sm" color="gray.500">
-                    Start Date: {format(new Date(course.startDate), "MMMM dd, yyyy")}
-                  </Text>
-                  <Text noOfLines={2} overflow="hidden" textOverflow="ellipsis">
-                    {course.description}
-                  </Text>
-                </VStack>
-              </CardHeader>
-              <Box p={4} flex="1" overflow="hidden">
-                <Box position="absolute" bottom="4" left="4">
-                  <Badge colorScheme="teal">{course.modules.length} Modules</Badge>
-                </Box>
-              </Box>
-              <Box position="absolute" top="2" right="2">
-                {/* <IconButton
-                  aria-label="Edit Course"
-                  icon={<EditIcon />}
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditCourse(course);
-                  }}
-                  mr={2}
-                /> */}
-                {/* <IconButton
-                  aria-label="Delete Course"
-                  icon={<DeleteIcon />}
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteCourse(course);
-                  }}
-                /> */}
-              </Box>
-            </Card>
+              course={course}
+              selectedCourse={selectedCourse}
+              onClick={handleCourseClick}
+            />
           ))}
         </SimpleGrid>
         {course.courses.length > MAX_ITEMS && (
@@ -173,40 +80,12 @@ const TeacherDashboard = () => {
           </Heading>
           <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
             {moduleList.map((module: IModule) => (
-              <Card
+              <ModulesCard
                 key={module.id}
-                cursor="pointer"
-                onClick={() => handleModuleClick(module)}
-                _hover={{ boxShadow: "2xl" }}
-                width={CARD_WIDTH}
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                position="relative"
-                bg={selectedModule?.id === module.id ? "teal.100" : "white"}>
-                <CardHeader>
-                  <VStack align="start" spacing={1}>
-                    <Heading size="md">{module.name}</Heading>
-                    <Text fontSize="sm" color="gray.500">
-                      Start Date: {format(new Date(module.startDate), "MMMM dd, yyyy")}
-                    </Text>
-                    <Text fontSize="sm" color="gray.500">
-                      End Date: {format(new Date(module.endDate), "MMMM dd, yyyy")}
-                    </Text>
-                  </VStack>
-                </CardHeader>
-                <Box p={4} pt={0} mb={2} flex="1" overflow="hidden">
-                  <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis" mb={6}>
-                    {module.description}
-                  </Text>
-                  <Box position="absolute" bottom="4" left="4">
-                    <Badge colorScheme="teal">{module.activities.length} Activities</Badge>
-                  </Box>
-                </Box>
-              </Card>
+                module={module}
+                selectedModule={selectedModule}
+                onClick={handleModuleClick}
+              />
             ))}
           </SimpleGrid>
           {selectedCourse.modules.length > MAX_ITEMS && (
@@ -225,33 +104,9 @@ const TeacherDashboard = () => {
           <Heading size="lg" mb={4}>
             Activities for {selectedModule.name}
           </Heading>
-          <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
+          <SimpleGrid columns={3} spacing={6}>
             {selectedModule.activities.map((activity: IActivity) => (
-              <Card
-                key={activity.id}
-                _hover={{ boxShadow: "2xl" }}
-                width={CARD_WIDTH}
-                borderWidth="1px"
-                borderRadius="lg"
-                overflow="hidden"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                position="relative">
-                <CardHeader>
-                  <VStack align="start" spacing={1}>
-                    <Heading size="md">{activity.name}</Heading>
-                    <Text fontSize="sm" color="gray.500">
-                      Due Date: {format(new Date(activity.endDate), "MMMM dd, yyyy")}
-                    </Text>
-                  </VStack>
-                </CardHeader>
-                <Box p={4} pt={0} flex="1" overflow="hidden">
-                  <Text noOfLines={3} overflow="hidden" textOverflow="ellipsis">
-                    {activity.description}
-                  </Text>
-                </Box>
-              </Card>
+              <ActivityCard key={activity.id} activity={activity} />
             ))}
           </SimpleGrid>
         </Box>
