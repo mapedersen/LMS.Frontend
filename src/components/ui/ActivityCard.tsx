@@ -8,6 +8,8 @@ interface ActivityCardProps {
 }
 
 const ActivityCard: React.FC<ActivityCardProps> = ({ activity }) => {
+  console.log(activity);
+
   return (
     <Card
       key={activity.id}

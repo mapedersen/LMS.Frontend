@@ -86,11 +86,35 @@ const AddActivity = () => {
       return;
     }
 
+    // Validate start date
+    if (moduleData && new Date(startDate) < new Date(moduleData.startDate)) {
+      toast({
+        title: "Invalid start date.",
+        description: "Start date cannot be before the module's start date.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     // Validate end date
-    if (moduleEndDate && new Date(endDate) > moduleEndDate) {
+    if (moduleData && new Date(endDate) > new Date(moduleData.endDate)) {
       toast({
         title: "Invalid end date.",
         description: "End date cannot exceed the module's end date.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    // Validate that start date is not after end date
+    if (new Date(startDate) > new Date(endDate)) {
+      toast({
+        title: "Invalid date range.",
+        description: "Start date cannot be after the end date.",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -184,22 +208,13 @@ const AddActivity = () => {
         Add New Activity
       </Heading>
       <VStack spacing={4} as="form" onSubmit={handleSubmit}>
-        <Input
-          placeholder="Activity Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <Textarea
-          placeholder="Activity Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
         <Select
           placeholder="Select Type"
           value={typeId ?? ""}
-          onChange={(e) => setTypeId(Number(e.target.value))}
+          onChange={(e) => {
+            setTypeId(Number(e.target.value));
+            setName(e.target.options[e.target.selectedIndex].text); // Set the name as the selected activity type
+          }}
           required>
           <option value="1">E-Learning</option>
           <option value="2">Assignment</option>
@@ -207,6 +222,18 @@ const AddActivity = () => {
           <option value="4">Group Work</option>
           <option value="5">Quiz</option>
         </Select>
+        {/* <Input
+          placeholder="Activity Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        /> */}
+        <Textarea
+          placeholder="Activity Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
         <Input
           type="date"
           placeholder="Start Date"
