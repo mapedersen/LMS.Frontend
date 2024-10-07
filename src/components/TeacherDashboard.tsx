@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { Box, Heading, SimpleGrid, Center, Button, useToast, Flex } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import { Box, Heading, SimpleGrid, Center, Button, Flex, Spinner } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
-import ModulesCard from "./ui/ModuleCard"; // Import ModulesCard component
+import ModuleCard from "./ui/ModuleCard"; // Import ModuleCard component
 import CourseCard from "./ui/CourseCard"; // Import CourseCard component
 import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
 import { useLocation, useNavigate } from "react-router-dom";
@@ -16,13 +16,14 @@ const TeacherDashboard = () => {
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
   const [showAllModules, setShowAllModules] = useState(false);
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // State for initial loading
   const navigate = useNavigate(); // Initialize useNavigate
   const location = useLocation(); // Initialize useLocation
 
   useEffect(() => {
     if (location.state) {
       const { selectedCourseId, selectedModuleId } = location.state;
-      const selectedCourse = course.courses.find((c) => c.id === selectedCourseId);
+      const selectedCourse = course?.courses.find((c) => c.id === selectedCourseId);
       if (selectedCourse) {
         setSelectedCourse(selectedCourse);
         const selectedModule = selectedCourse.modules.find((m) => m.id === selectedModuleId);
@@ -31,9 +32,18 @@ const TeacherDashboard = () => {
         }
       }
     }
-  }, [location.state, course.courses]);
+    setTimeout(() => {
+      setIsInitialLoading(false); // Hide loader after 0.5 seconds
+    }, 500);
+  }, [location.state, course?.courses]);
 
-  if (!course) return <p>No Course</p>;
+  if (isInitialLoading || !course) {
+    return (
+      <Center height="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   console.log(course);
 
@@ -55,18 +65,6 @@ const TeacherDashboard = () => {
     }
   };
 
-  const handleModuleClick = (module: IModule) => {
-    if (selectedModule?.id === module.id) {
-      setSelectedModule(null); // Unselect the module if it is already selected
-    } else {
-      setSelectedModule(module); // Select the module
-    }
-  };
-
-  const handleAddCourse = () => {
-    navigate(`/dashboard/add-course/`);
-  };
-
   const handleAddModule = () => {
     if (selectedCourse) {
       navigate(`/dashboard/add-module/${selectedCourse.id}`);
@@ -79,41 +77,31 @@ const TeacherDashboard = () => {
     }
   };
 
-  return (
-    <Box p={5} w="100%">
-      {/* Courses grid */}
-      <Box mb={8}>
-        <Flex align="baseline" mb={4} justifyContent="space-between">
-          <Heading size="lg" mb={4}>
-            Courses
-          </Heading>
-          <Button ml={4} onClick={handleAddCourse} colorScheme="teal" mr={10}>
-            Add Course
-          </Button>
-        </Flex>
-        <Flex gap={6} wrap="wrap">
-          {courseList.map((course: ICourse) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              selectedCourse={selectedCourse}
-              onClick={handleCourseClick}
-            />
-          ))}
-        </Flex>
-        {course.courses.length > MAX_ITEMS && (
-          <Center mt={4}>
-            <Button onClick={() => setShowAllCourses(!showAllCourses)}>
-              {showAllCourses ? "Show Less" : "Show More"}
-            </Button>
-          </Center>
-        )}
-      </Box>
+  const handleAddCourse = () => {
+    navigate(`/dashboard/add-course`);
+  };
 
-      {/* Modules grid */}
+  return (
+    <Box p={10}>
+      <Flex justify="space-between" align="center" mb={4}>
+        <Heading size="lg">Courses</Heading>
+        <Button ml={4} onClick={handleAddCourse} colorScheme="teal">
+          Add Course
+        </Button>
+      </Flex>
+      <Flex gap={6} wrap="wrap">
+        {courseList.map((course) => (
+          <CourseCard
+            key={course.id}
+            course={course}
+            selectedCourse={selectedCourse}
+            onClick={() => handleCourseClick(course)}
+          />
+        ))}
+      </Flex>
       {selectedCourse && (
-        <Box mb={8}>
-          <Flex align="center" mb={4} justifyContent="space-between" mr={10}>
+        <Box mt={8}>
+          <Flex justify="space-between" align="center" mb={4}>
             <Heading size="lg">Modules for {selectedCourse.name}</Heading>
             <Button ml={4} onClick={handleAddModule} colorScheme="teal">
               Add Module
@@ -121,11 +109,11 @@ const TeacherDashboard = () => {
           </Flex>
           <Flex gap={6} wrap="wrap">
             {moduleList.map((module: IModule) => (
-              <ModulesCard
+              <ModuleCard
                 key={module.id}
                 module={module}
                 selectedModule={selectedModule}
-                onClick={handleModuleClick}
+                onClick={() => setSelectedModule(module)}
               />
             ))}
           </Flex>
@@ -138,19 +126,21 @@ const TeacherDashboard = () => {
           )}
         </Box>
       )}
-
-      {/* Activities grid */}
       {selectedModule && (
-        <Box mb={8}>
-          <Flex align="center" mb={4} justifyContent="space-between" mr={10}>
+        <Box mt={8}>
+          <Flex justify="space-between" align="center" mb={4}>
             <Heading size="lg">Activities for {selectedModule.name}</Heading>
             <Button ml={4} onClick={handleAddActivity} colorScheme="teal">
               Add Activity
             </Button>
           </Flex>
-          <Flex gap={4} wrap="wrap">
+          <Flex wrap="wrap" gap={6}>
+            {" "}
+            {/* Changed to Flex with wrapping */}
             {selectedModule.activities.map((activity: IActivity) => (
-              <ActivityCard key={activity.id} activity={activity} />
+              <Box key={activity.id} p={2}>
+                <ActivityCard activity={activity} />
+              </Box>
             ))}
           </Flex>
         </Box>
