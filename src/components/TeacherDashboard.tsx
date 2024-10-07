@@ -7,7 +7,7 @@ import CourseCard from "./ui/CourseCard"; // Import CourseCard component
 import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
 import { useNavigate } from "react-router-dom";
 
-const MAX_ITEMS = 8;
+const MAX_ITEMS = 5;
 const CARD_WIDTH = "250px";
 
 const TeacherDashboard = () => {
