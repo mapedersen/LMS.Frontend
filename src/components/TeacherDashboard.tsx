@@ -7,7 +7,7 @@ import CourseCard from "./ui/CourseCard"; // Import CourseCard component
 import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
 import { useNavigate } from "react-router-dom";
 
-const MAX_ITEMS = 5;
+const MAX_ITEMS = 8;
 const CARD_WIDTH = "250px";
 
 const TeacherDashboard = () => {
@@ -48,6 +48,10 @@ const TeacherDashboard = () => {
     }
   };
 
+  const handleAddCourse = () => {
+    navigate(`/dashboard/add-course/`);
+  };
+
   const handleAddModule = () => {
     if (selectedCourse) {
       navigate(`/dashboard/add-module/${selectedCourse.id}`);
@@ -64,10 +68,15 @@ const TeacherDashboard = () => {
     <Box p={5} w="100%">
       {/* Courses grid */}
       <Box mb={8}>
-        <Heading size="lg" mb={4}>
-          Courses
-        </Heading>
-        <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
+        <Flex align="baseline" mb={4} justifyContent="space-between">
+          <Heading size="lg" mb={4}>
+            Courses
+          </Heading>
+          <Button ml={4} onClick={handleAddCourse} colorScheme="teal" mr={10}>
+            Add Course
+          </Button>
+        </Flex>
+        <Flex gap={6} wrap="wrap">
           {courseList.map((course: ICourse) => (
             <CourseCard
               key={course.id}
@@ -76,7 +85,7 @@ const TeacherDashboard = () => {
               onClick={handleCourseClick}
             />
           ))}
-        </SimpleGrid>
+        </Flex>
         {course.courses.length > MAX_ITEMS && (
           <Center mt={4}>
             <Button onClick={() => setShowAllCourses(!showAllCourses)}>
@@ -89,13 +98,13 @@ const TeacherDashboard = () => {
       {/* Modules grid */}
       {selectedCourse && (
         <Box mb={8}>
-          <Flex align="center" mb={4}>
+          <Flex align="center" mb={4} justifyContent="space-between" mr={10}>
             <Heading size="lg">Modules for {selectedCourse.name}</Heading>
             <Button ml={4} onClick={handleAddModule} colorScheme="teal">
               Add Module
             </Button>
           </Flex>
-          <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
+          <Flex gap={6} wrap="wrap">
             {moduleList.map((module: IModule) => (
               <ModulesCard
                 key={module.id}
@@ -104,7 +113,7 @@ const TeacherDashboard = () => {
                 onClick={handleModuleClick}
               />
             ))}
-          </SimpleGrid>
+          </Flex>
           {selectedCourse.modules.length > MAX_ITEMS && (
             <Center mt={4}>
               <Button onClick={() => setShowAllModules(!showAllModules)}>
@@ -118,7 +127,7 @@ const TeacherDashboard = () => {
       {/* Activities grid */}
       {selectedModule && (
         <Box mb={8}>
-          <Flex align="center" mb={4}>
+          <Flex align="center" mb={4} justifyContent="space-between" mr={10}>
             <Heading size="lg">Activities for {selectedModule.name}</Heading>
             <Button ml={4} onClick={handleAddActivity} colorScheme="teal">
               Add Activity

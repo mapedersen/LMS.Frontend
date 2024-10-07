@@ -29,9 +29,9 @@ const Navbar = () => {
         <Flex gap={4}>
           {user.role === "Teacher" && (
             <>
-              <Button as={Link} to="/dashboard/add-course" colorScheme="whiteAlpha" variant="solid">
+              {/* <Button as={Link} to="/dashboard/add-course" colorScheme="whiteAlpha" variant="solid">
                 Add Course
-              </Button>
+              </Button> */}
               {/* <Button as={Link} to="/dashboard/users" colorScheme="whiteAlpha" variant="solid">
                 Users
               </Button> */}
