@@ -12,6 +12,7 @@ import {
   CardHeader,
   Text,
   Badge,
+  Spinner,
 } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { fetchStudentsForCourse } from "../services/courseService";
@@ -27,24 +28,35 @@ const StudentDashboard = () => {
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
   const [studentsForCourse, setStudentsForCourse] = useState<IUser[] | []>([]);
   const [showPastModules, setShowPastModules] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // State for initial loading
 
   useEffect(() => {
-    if (course && user) {
-      const fetchStudents = async () => {
-        try {
-          const accessToken = localStorage.getItem("accessToken");
-          if (accessToken) {
-            const students = await fetchStudentsForCourse(accessToken, course.id);
-            setStudentsForCourse(students);
-            console.log(students);
-          } else {
-            console.error("No access token available.");
-          }
-        } catch (error) {
-          console.error("Failed to fetch students:", error);
+    const fetchStudents = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken) {
+          const students = await fetchStudentsForCourse(accessToken, course.id);
+          setStudentsForCourse(students);
+          console.log(students);
+        } else {
+          console.error("No access token available.");
         }
-      };
+      } catch (error) {
+        console.error("Failed to fetch students:", error);
+      } finally {
+        // Ensure the loading spinner is displayed for at least 0.5 seconds
+        const minLoadingTime = new Promise((resolve) => setTimeout(resolve, 500));
+        await Promise.all([minLoadingTime]);
+        setIsInitialLoading(false); // Hide loader after fetching data
+      }
+    };
+
+    if (course && user) {
       fetchStudents();
+    } else {
+      setTimeout(() => {
+        setIsInitialLoading(false); // Hide loader if no course or user after 0.5 seconds
+      }, 500);
     }
   }, [course, user]);
 
@@ -61,6 +73,14 @@ const StudentDashboard = () => {
         showPastModules ? isPast(new Date(module.endDate)) : !isPast(new Date(module.endDate))
       )
     : [];
+
+  if (isInitialLoading) {
+    return (
+      <Center height="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   return (
     <Center>
