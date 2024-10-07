@@ -99,6 +99,13 @@ const TeacherDashboard = () => {
           />
         ))}
       </Flex>
+      {course.courses.length > MAX_ITEMS && (
+        <Center mt={4}>
+          <Button onClick={() => setShowAllCourses(!showAllCourses)}>
+            {showAllCourses ? "Show Less" : "Show More"}
+          </Button>
+        </Center>
+      )}
       {selectedCourse && (
         <Box mt={8}>
           <Flex justify="space-between" align="center" mb={4}>

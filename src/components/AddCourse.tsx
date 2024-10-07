@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Heading, VStack, useToast } from "@chakra-ui/react";
+import { Box, Button, Center, Heading, Spinner, VStack, useToast } from "@chakra-ui/react";
 import FormField from "./ui/FormFields";
 import { refreshAccessToken } from "../services/authService";
 import { fetchCourseDetails } from "../services/courseService";
@@ -14,7 +14,13 @@ const AddCourse = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const toast = useToast();
-  const accessToken = localStorage.getItem("accessToken");
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // State for initial loading
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsInitialLoading(false); // Hide loader after 0.5 seconds
+    }, 500);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +104,14 @@ const AddCourse = () => {
       setIsLoading(false);
     }
   };
+
+  if (isInitialLoading) {
+    return (
+      <Center height="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   return (
     <Box p={5} maxW="600px" mx="auto" mt="20" bg="white" borderRadius="md" boxShadow="md">
