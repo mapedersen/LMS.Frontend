@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Box, Heading, SimpleGrid, Center, Button, useToast } from "@chakra-ui/react";
+import { Box, Heading, SimpleGrid, Center, Button, useToast, Flex } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
 import ModulesCard from "./ui/ModuleCard"; // Import ModulesCard component
 import CourseCard from "./ui/CourseCard"; // Import CourseCard component
 import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
+import { useNavigate } from "react-router-dom";
 
 const MAX_ITEMS = 5;
 const CARD_WIDTH = "250px";
@@ -15,6 +16,7 @@ const TeacherDashboard = () => {
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
   const [showAllModules, setShowAllModules] = useState(false);
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   if (!course) return <p>No Course</p>;
 
@@ -43,6 +45,18 @@ const TeacherDashboard = () => {
       setSelectedModule(null); // Unselect the module if it is already selected
     } else {
       setSelectedModule(module); // Select the module
+    }
+  };
+
+  const handleAddModule = () => {
+    if (selectedCourse) {
+      navigate(`/dashboard/add-module/${selectedCourse.id}`);
+    }
+  };
+
+  const handleAddActivity = () => {
+    if (selectedModule) {
+      navigate(`/dashboard/add-activity/${selectedModule.id}`);
     }
   };
 
@@ -75,9 +89,12 @@ const TeacherDashboard = () => {
       {/* Modules grid */}
       {selectedCourse && (
         <Box mb={8}>
-          <Heading size="lg" mb={4}>
-            Modules for {selectedCourse.name}
-          </Heading>
+          <Flex align="center" mb={4}>
+            <Heading size="lg">Modules for {selectedCourse.name}</Heading>
+            <Button ml={4} onClick={handleAddModule} colorScheme="teal">
+              Add Module
+            </Button>
+          </Flex>
           <SimpleGrid minChildWidth={CARD_WIDTH} spacing={6} overflowX="auto">
             {moduleList.map((module: IModule) => (
               <ModulesCard
@@ -101,14 +118,17 @@ const TeacherDashboard = () => {
       {/* Activities grid */}
       {selectedModule && (
         <Box mb={8}>
-          <Heading size="lg" mb={4}>
-            Activities for {selectedModule.name}
-          </Heading>
-          <SimpleGrid columns={3} spacing={6}>
+          <Flex align="center" mb={4}>
+            <Heading size="lg">Activities for {selectedModule.name}</Heading>
+            <Button ml={4} onClick={handleAddActivity} colorScheme="teal">
+              Add Activity
+            </Button>
+          </Flex>
+          <Flex gap={4} wrap="wrap">
             {selectedModule.activities.map((activity: IActivity) => (
               <ActivityCard key={activity.id} activity={activity} />
             ))}
-          </SimpleGrid>
+          </Flex>
         </Box>
       )}
     </Box>
