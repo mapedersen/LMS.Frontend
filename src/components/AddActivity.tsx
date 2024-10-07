@@ -10,6 +10,8 @@ import {
   Input,
   Textarea,
   Text,
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
 import { fetchCourseDetails } from "../services/courseService";
 import { useAuth } from "../context/authContext";
@@ -24,13 +26,13 @@ const AddActivity = () => {
   const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [moduleEndDate, setModuleEndDate] = useState<Date | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // State for initial loading
   const [moduleData, setModuleData] = useState<any | null>(null); // State to hold module data
   const [courseData, setCourseData] = useState<any | null>(null); // State to hold module data
   const navigate = useNavigate();
   const toast = useToast();
 
   useEffect(() => {
-    // Fetch module and course details from the server
     const fetchModuleAndCourseDetails = async () => {
       const accessToken = localStorage.getItem("accessToken");
 
@@ -49,7 +51,7 @@ const AddActivity = () => {
 
         if (moduleResponse.ok) {
           const moduleData = await moduleResponse.json();
-          setModuleData(moduleData);
+          setModuleData(moduleData); // Set module data
           const courseId = moduleData.courseId;
 
           // Fetch course details
@@ -61,7 +63,7 @@ const AddActivity = () => {
 
           if (courseResponse.ok) {
             const courseData = await courseResponse.json();
-            setCourseData(courseData);
+            setCourseData(courseData); // Set course data
           } else {
             console.error("Failed to fetch course details");
           }
@@ -70,6 +72,10 @@ const AddActivity = () => {
         }
       } catch (error) {
         console.error("Error fetching module and course details:", error);
+      } finally {
+        setTimeout(() => {
+          setIsInitialLoading(false); // Hide loader after 0.5 seconds
+        }, 500);
       }
     };
 
@@ -184,6 +190,14 @@ const AddActivity = () => {
       setIsLoading(false);
     }
   };
+
+  if (isInitialLoading) {
+    return (
+      <Center height="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   return (
     <Box p={5} maxW="600px" mx="auto" mt="20" bg="white" borderRadius="md" boxShadow="md">

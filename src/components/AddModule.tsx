@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, Heading, VStack, useToast, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, VStack, useToast, Text, Center, Spinner } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import FormFields from "./ui/FormFields";
 import { ICourse } from "../types/course";
@@ -16,6 +16,7 @@ const AddModule = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true); // State for initial loading
   const navigate = useNavigate();
   const toast = useToast();
   const { user, setCourse } = useAuth();
@@ -69,6 +70,10 @@ const AddModule = () => {
         }
       } catch (error) {
         console.error("Error fetching courses:", error);
+      } finally {
+        setTimeout(() => {
+          setIsInitialLoading(false); // Hide loader after 0.5 seconds
+        }, 500);
       }
     };
     fetchCourse();
@@ -162,6 +167,14 @@ const AddModule = () => {
       setIsLoading(false);
     }
   };
+
+  if (isInitialLoading) {
+    return (
+      <Center height="100vh">
+        <Spinner size="xl" />
+      </Center>
+    );
+  }
 
   return (
     <Box p={5} maxW="600px" mx="auto" mt="20" bg="white" borderRadius="md" boxShadow="md">
