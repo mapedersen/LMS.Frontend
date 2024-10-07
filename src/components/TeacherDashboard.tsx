@@ -7,7 +7,7 @@ import CourseCard from "./ui/CourseCard"; // Import CourseCard component
 import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
 import { useLocation, useNavigate } from "react-router-dom";
 
-const MAX_ITEMS = 5;
+const MAX_ITEMS = 4;
 const CARD_WIDTH = "250px";
 
 const TeacherDashboard = () => {
@@ -82,77 +82,79 @@ const TeacherDashboard = () => {
   };
 
   return (
-    <Box p={10}>
-      <Flex justify="space-between" align="center" mb={4}>
-        <Heading size="lg">Courses</Heading>
-        <Button ml={4} onClick={handleAddCourse} colorScheme="teal">
-          Add Course
-        </Button>
-      </Flex>
-      <Flex gap={6} wrap="wrap">
-        {courseList.map((course) => (
-          <CourseCard
-            key={course.id}
-            course={course}
-            selectedCourse={selectedCourse}
-            onClick={() => handleCourseClick(course)}
-          />
-        ))}
-      </Flex>
-      {course.courses.length > MAX_ITEMS && (
-        <Center mt={4}>
-          <Button onClick={() => setShowAllCourses(!showAllCourses)}>
-            {showAllCourses ? "Show Less" : "Show More"}
+    <Center>
+      <Box p={10} maxW="1200px" width="100%">
+        <Flex justify="space-between" align="center" mb={4}>
+          <Heading size="lg">Courses</Heading>
+          <Button ml={4} onClick={handleAddCourse} colorScheme="teal">
+            Add Course
           </Button>
-        </Center>
-      )}
-      {selectedCourse && (
-        <Box mt={8}>
-          <Flex justify="space-between" align="center" mb={4}>
-            <Heading size="lg">Modules for {selectedCourse.name}</Heading>
-            <Button ml={4} onClick={handleAddModule} colorScheme="teal">
-              Add Module
+        </Flex>
+        <Flex gap={6} wrap="wrap">
+          {courseList.map((course) => (
+            <CourseCard
+              key={course.id}
+              course={course}
+              selectedCourse={selectedCourse}
+              onClick={() => handleCourseClick(course)}
+            />
+          ))}
+        </Flex>
+        {course.courses.length > MAX_ITEMS && (
+          <Center mt={4}>
+            <Button onClick={() => setShowAllCourses(!showAllCourses)}>
+              {showAllCourses ? "Show Less" : "Show More"}
             </Button>
-          </Flex>
-          <Flex gap={6} wrap="wrap">
-            {moduleList.map((module: IModule) => (
-              <ModuleCard
-                key={module.id}
-                module={module}
-                selectedModule={selectedModule}
-                onClick={() => setSelectedModule(module)}
-              />
-            ))}
-          </Flex>
-          {selectedCourse.modules.length > MAX_ITEMS && (
-            <Center mt={4}>
-              <Button onClick={() => setShowAllModules(!showAllModules)}>
-                {showAllModules ? "Show Less" : "Show More"}
+          </Center>
+        )}
+        {selectedCourse && (
+          <Box mt={8}>
+            <Flex justify="space-between" align="center" mb={4}>
+              <Heading size="lg">Modules for {selectedCourse.name}</Heading>
+              <Button ml={4} onClick={handleAddModule} colorScheme="teal">
+                Add Module
               </Button>
-            </Center>
-          )}
-        </Box>
-      )}
-      {selectedModule && (
-        <Box mt={8}>
-          <Flex justify="space-between" align="center" mb={4}>
-            <Heading size="lg">Activities for {selectedModule.name}</Heading>
-            <Button ml={4} onClick={handleAddActivity} colorScheme="teal">
-              Add Activity
-            </Button>
-          </Flex>
-          <Flex wrap="wrap" gap={6}>
-            {" "}
-            {/* Changed to Flex with wrapping */}
-            {selectedModule.activities.map((activity: IActivity) => (
-              <Box key={activity.id} p={2}>
-                <ActivityCard activity={activity} />
-              </Box>
-            ))}
-          </Flex>
-        </Box>
-      )}
-    </Box>
+            </Flex>
+            <Flex gap={6} wrap="wrap">
+              {moduleList.map((module: IModule) => (
+                <ModuleCard
+                  key={module.id}
+                  module={module}
+                  selectedModule={selectedModule}
+                  onClick={() => setSelectedModule(module)}
+                />
+              ))}
+            </Flex>
+            {selectedCourse.modules.length > MAX_ITEMS && (
+              <Center mt={4}>
+                <Button onClick={() => setShowAllModules(!showAllModules)}>
+                  {showAllModules ? "Show Less" : "Show More"}
+                </Button>
+              </Center>
+            )}
+          </Box>
+        )}
+        {selectedModule && (
+          <Box mt={8}>
+            <Flex justify="space-between" align="center" mb={4}>
+              <Heading size="lg">Activities for {selectedModule.name}</Heading>
+              <Button ml={4} onClick={handleAddActivity} colorScheme="teal">
+                Add Activity
+              </Button>
+            </Flex>
+            <Flex wrap="wrap" gap={6}>
+              {" "}
+              {/* Changed to Flex with wrapping */}
+              {selectedModule.activities.map((activity: IActivity) => (
+                <Box key={activity.id} p={2}>
+                  <ActivityCard activity={activity} />
+                </Box>
+              ))}
+            </Flex>
+          </Box>
+        )}
+      </Box>
+    </Center>
   );
 };
 
