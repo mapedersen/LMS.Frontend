@@ -157,7 +157,12 @@ const AddActivity = () => {
           duration: 5000,
           isClosable: true,
         });
-        navigate(`/dashboard`);
+        navigate(`/dashboard`, {
+          state: {
+            selectedCourseId: moduleData.courseId,
+            selectedModuleId: moduleData.id,
+          },
+        }); // Pass the course, module, and activity IDs as state
       } else {
         toast({
           title: "Error",

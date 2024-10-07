@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Heading, SimpleGrid, Center, Button, useToast, Flex } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
 import ModulesCard from "./ui/ModuleCard"; // Import ModulesCard component
 import CourseCard from "./ui/CourseCard"; // Import CourseCard component
 import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const MAX_ITEMS = 5;
 const CARD_WIDTH = "250px";
@@ -17,6 +17,21 @@ const TeacherDashboard = () => {
   const [showAllModules, setShowAllModules] = useState(false);
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
   const navigate = useNavigate(); // Initialize useNavigate
+  const location = useLocation(); // Initialize useLocation
+
+  useEffect(() => {
+    if (location.state) {
+      const { selectedCourseId, selectedModuleId } = location.state;
+      const selectedCourse = course.courses.find((c) => c.id === selectedCourseId);
+      if (selectedCourse) {
+        setSelectedCourse(selectedCourse);
+        const selectedModule = selectedCourse.modules.find((m) => m.id === selectedModuleId);
+        if (selectedModule) {
+          setSelectedModule(selectedModule);
+        }
+      }
+    }
+  }, [location.state, course.courses]);
 
   if (!course) return <p>No Course</p>;
 
