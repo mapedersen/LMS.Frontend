@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Box, Heading, SimpleGrid, Center, Button, useToast } from "@chakra-ui/react";
 import { useAuth } from "../context/authContext";
 import { ICourses, ICourse, IModule, IActivity } from "../types/course";
-import { format } from "date-fns";
 import ModulesCard from "./ui/ModuleCard"; // Import ModulesCard component
 import CourseCard from "./ui/CourseCard"; // Import CourseCard component
 import ActivityCard from "./ui/ActivityCard"; // Import ActivityCard component
@@ -16,9 +15,10 @@ const TeacherDashboard = () => {
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
   const [showAllModules, setShowAllModules] = useState(false);
   const [selectedModule, setSelectedModule] = useState<IModule | null>(null);
-  const toast = useToast();
 
   if (!course) return <p>No Course</p>;
+
+  console.log(course);
 
   const courseList = showAllCourses ? course.courses : course.courses.slice(0, MAX_ITEMS);
   const moduleList = selectedCourse
